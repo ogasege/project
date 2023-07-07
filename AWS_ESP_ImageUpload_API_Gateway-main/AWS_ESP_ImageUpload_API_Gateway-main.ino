@@ -30,17 +30,11 @@ void connectAWS()
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  ////Serial.println("Connecting to Wi-Fi");
+  //Connecting to Wi-Fi....
 
   while (WiFi.status() != WL_CONNECTED){
     delay(500);
-    ////Serial.print(".");
   }
-
-   ////Serial.print("Connected to ");
-   //Serial.println(WIFI_SSID);
-
-
 
   // Configure WiFiClientSecure to use the AWS credentials
   client.setCACert(AWS_CERT_CA);
@@ -92,7 +86,7 @@ void initCam() {
   // camera init
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
-    //Serial.printf("Camera init failed with error 0x%x", err);
+    //Camera init failed with error
     return;
   }
 
@@ -118,10 +112,10 @@ void takePictureAndSubmit() {
     // capture camera frame
   camera_fb_t *fb = esp_camera_fb_get();
   if(!fb) {
-     //Serial.println("Camera capture failed");
+     //Camera capture failed
       return;
   } else {
-      //Serial.println("Camera capture successful!");
+      //Camera capture successful
   }
 
   //-begin the submission process
@@ -147,10 +141,9 @@ void takePictureAndSubmit() {
 String s3Url = String(s3Path);
 s3Url.replace("{filename}", Time);
 
-  //Serial.println("\nStarting connection to server...");
   if (!client.connect(s3Endpoint, 443))
     {
-      //Serial.println("Connection failed!");
+      //Failed connection
     }
   else {   
    // Connected to the API endpoint
@@ -159,11 +152,14 @@ s3Url.replace("{filename}", Time);
     "Content-Type: image/jpeg\r\n" +
     String("Content-Length: ") + String(fb->len) + "\r\n";
 
-    //Serial.println("Connecetd to Server!");
+    //Flash LED to indicate successful connection to the server
     digitalWrite(LED_BUILTIN,HIGH);
     delay(500);
     digitalWrite(LED_BUILTIN,LOW);
     delay(500);
+    //Send command to the Arduino to signify successful data transmission to AWS
+    Serial.write('A'); 
+
     //Make HTTP request:
     client.println("PUT " + String(s3Url) + " HTTP/1.1");
     client.println("Host: " + String(s3Endpoint));
@@ -176,9 +172,7 @@ s3Url.replace("{filename}", Time);
   while (client.connected()) {
     String line = client.readStringUntil('\n');
      if (line == "\r") {
-        //Serial.println("headers received");
         break;
-        ////Serial.println(line);
     }
   }
 
@@ -186,20 +180,14 @@ s3Url.replace("{filename}", Time);
     // from the server, read them and print them:
     while (client.available()) {
       char c = client.read();
-      Serial.write(c);
+      /* The bytes could be stored in a buffer */
     }
-
-
   // Disconnect from the API endpoint
   client.stop();
   }
-  
-  
     // Clean up the camera resources
     esp_camera_fb_return(fb);
     esp_camera_deinit();
-    //Serial.println("Image cleaned");
-
 }
 
 void setup() {
@@ -210,10 +198,13 @@ void setup() {
 }
 
 void loop() {
-  takePictureAndSubmit();
-  delay(120000);
-
-  //net.loop();
-  //Await response from IOT AWS IF RESPONSE FLAGS PROBLEM,
-  //THEN ENGAGE THE BARRICADE
+  if(Serial.available() > 0)
+  {
+    char rx = Serial.read();
+    if(rx == 'T')
+    {
+      //'T' is the command to take a picture (received from the Arduino)
+      takePictureAndSubmit();
+    }
+  }
 }
