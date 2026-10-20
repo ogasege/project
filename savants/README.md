@@ -7,8 +7,8 @@ The interface uses Linear's UI and UX as its baseline: tokens, layout and densit
 Linear's web app and recovered with REA (see `docs/REVERSE_ENGINEERING.md`), rebuilt with our own
 components and the open Inter typeface. The Emeka design system will be tuned on top of it.
 
-> Built from [`PROMPT.md`](./PROMPT.md), which is the full product brief derived from the Oct 19
-> "Antler retrospective & new direction" meeting. Read it first: it explains *why* every piece exists.
+> What we're building and why: [`docs/PRODUCT_PROMPT.md`](./docs/PRODUCT_PROMPT.md).
+> UI fixes in progress: [`docs/LOVABLE_UI_PROMPT.md`](./docs/LOVABLE_UI_PROMPT.md).
 > The data model, agent protocol and integration catalog are grounded in
 > [a reverse-engineering pass over what Linear and Notion ship](./docs/REVERSE_ENGINEERING.md),
 > done with [REA](https://github.com/morluto/rea).
@@ -26,24 +26,78 @@ components and the open Inter typeface. The Emeka design system will be tuned on
 | **Approvals** | The human gate. Every consequential agent action waits here unless that savant's autonomy allows it. Edit, then approve, or reject. Everything is on record. |
 | **Integrations** | The union of Linear's and Notion's integration directories in one catalog, each shown with its real brand logo (76 of 92 apps; see below). GitHub, Slack and outgoing webhooks are live; the rest connect in simulated mode. Plus a built-in **MCP server** at `/api/mcp`, so Claude, Cursor, ChatGPT or any MCP client can read and write the workspace (writes go through the same human gate). |
 
-## Quickstart
+## Run it on your computer
+
+### 1. What you need (once)
+
+| Need | How to check | How to get it |
+|---|---|---|
+| Node.js 22 or newer | `node -v` | `brew install node` (Mac) or [nodejs.org](https://nodejs.org) |
+| Git | `git --version` | `xcode-select --install` (Mac) |
+| Access to the private EmekaAITeam GitHub org | open [the repo](https://github.com/EmekaAITeam/savants) in your browser | ask an org owner; then sign in once with `gh auth login` (`brew install gh`) or use an SSH key |
+| Chrome or Edge | | for talking to the savants out loud; typing works anywhere |
+| An Anthropic API key (optional) | | [console.anthropic.com](https://console.anthropic.com) → API keys. Without one the savants run on a built-in simulator. |
+
+### 2. First run
+
+Paste these one line at a time (they avoid characters some terminals escape when pasting):
 
 ```bash
-git clone -b claude/peaceful-edison-3aji4m https://github.com/ogasege/project.git
-cd project/savants
-npm run local        # installs, asks for an optional API key, starts, opens http://localhost:3000
-npm run local -- --key sk-ant-… --workspace wrkspc_…   # or pass them in (saved to .env.local)
+cd ~
+git clone https://github.com/EmekaAITeam/savants.git
+cd savants
+npm run local -- --workspace wrkspc_YOUR_WORKSPACE_ID
 ```
 
-Or by hand: `npm install`, `cp .env.example .env.local`, `npm run dev`.
+`npm run local` installs everything, asks for your API key (nothing shows while you paste it; that is
+normal), saves your settings to `.env.local`, starts the app and opens http://localhost:3000. The first
+run takes a minute or two. Before it starts it prints either *"Savants will use the live model (key
+ending …, workspace …)"* or *"No API key: Savants will use the built-in simulator."*
 
-- **No API key?** The savants run on a built-in simulator so you can demo everything offline. If a
-  live call fails for an account reason (bad key, no workspace, no model access), that turn falls
-  back to the simulator and the call says so.
-- **Key not scoped to a workspace?** Set `ANTHROPIC_WORKSPACE_ID` (the API asks for the
-  `anthropic-workspace-id` header).
-- **Voice** needs Chrome or Edge (Web Speech API). Everything also works by typing.
-- Data lives in `.data/db.json`; the audit log is `.data/oplog.ndjson`. `npm run reset-data` re-seeds.
+Which workspace ID? Keys made inside a workspace in the Anthropic Console need none: drop the
+`--workspace …` part. User-level keys (they start `sk-ant-usr-`) must name one: copy its ID
+(`wrkspc_…`) from Console → Workspaces. You can also pass the key itself:
+`npm run local -- --key sk-ant-… --workspace wrkspc_…` (it then lands in your shell history; leaving it
+out makes the script ask for it instead).
+
+### 3. Every day after
+
+```bash
+cd ~/savants
+git pull
+npm run local
+```
+
+Dependencies reinstall automatically when they change. Your key and workspace stay in `.env.local`.
+
+### 4. Settings (`.env.local`)
+
+| Variable | What it does |
+|---|---|
+| `ANTHROPIC_API_KEY` | Your Anthropic key. Empty means simulator. |
+| `ANTHROPIC_WORKSPACE_ID` | Needed only for keys not scoped to a workspace. |
+| `SAVANTS_DEFAULT_MODEL` | Model the savants use. Default `claude-opus-5-5`. |
+| `SAVANTS_FAST_MODEL` | Model for quick checks (who wants to speak next). Default `claude-haiku-5-5`. |
+| `SAVANTS_MCP_TOKEN` | Require this bearer token on the MCP server at `/api/mcp`. |
+| `SAVANTS_ALLOWED_HOSTS` | Extra host names allowed to reach the API (default: localhost only). |
+| `PORT` | Port for `npm run local` (default 3000). |
+
+`.env.local` is ignored by git and readable only by you. Never commit keys.
+
+### 5. If something goes wrong
+
+| You see | Do this |
+|---|---|
+| `Node.js 22+ is required` | `brew install node`, then run `npm run local` again. |
+| `Repository not found` when cloning | You aren't signed in to GitHub with access to EmekaAITeam: run `gh auth login`, or ask for access. |
+| `cmdand subsh>` or `quote>` after pasting | Press Ctrl+C. Your terminal escaped a character; paste the commands one line at a time. |
+| `Port 3000 is in use` | `PORT=3001 npm run local` |
+| "Simulator · the live model isn't reachable with this API key" | The key, workspace or model access is wrong. Check the line printed at start-up, fix `.env.local`, restart. |
+| The savants can't hear you | Use Chrome or Edge, allow the microphone in the address bar, and switch the mic from Off to Open mic in the call bar. |
+| You want a clean slate | Stop the app (Ctrl+C), `npm run reset-data`, start again. |
+
+Data lives in `.data/db.json`; the audit log is `.data/oplog.ndjson`. By hand instead of the script:
+`npm install`, `cp .env.example .env.local`, edit it, `npm run dev`.
 
 ### Security
 
@@ -92,16 +146,7 @@ API surface: `GET /api/state`, `POST /api/ops`, `GET /api/events` (SSE), `POST /
 
 Integration credentials never leave the server: `/api/state` and the SSE stream redact them.
 
-## Moving this folder into its own repository
-
-This project was generated inside another repo's branch. To publish it as its own repo with history:
-
-```bash
-# create an empty repo first (e.g. github.com/ogasege/savants), then from the outer repo root:
-./savants/scripts/publish-to-new-repo.sh git@github.com:ogasege/savants.git
-```
-
-## Roadmap (from the brief)
+## Roadmap
 
 Real auth and multi-tenant workspaces · CRDT text merging · server-side realtime voice
 (WebRTC + streaming STT/TTS) · real OAuth for the whole catalog · evals from corrections
