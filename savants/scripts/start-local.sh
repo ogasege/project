@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Run Emeka Savants on this machine and open it in the browser.
 #   ./scripts/start-local.sh
-# First run installs dependencies and asks for an optional Anthropic API key (kept in .env.local,
-# which git ignores). Without a key the savants run on the built-in simulator.
+# Installs dependencies (again whenever the lockfile changes), asks for an Anthropic API key if
+# .env.local has none (Enter skips it and uses the built-in simulator), and saves
+# ANTHROPIC_WORKSPACE_ID when you pass it in:
+#   ANTHROPIC_WORKSPACE_ID=wrkspc_… ./scripts/start-local.sh
+# .env.local is git-ignored and readable only by you.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -17,20 +20,29 @@ if [ "$major" -lt "$need_node_major" ]; then
   exit 1
 fi
 
-[ -d node_modules ] || npm install
+if [ ! -d node_modules ] || [ package-lock.json -nt node_modules/.package-lock.json ]; then
+  npm install
+fi
 
-if [ ! -f .env.local ]; then
+umask 077
+touch .env.local
+chmod 600 .env.local
+env_get() { grep -E "^$1=" .env.local | tail -n 1 | cut -d= -f2- || true; }
+env_set() {
+  { grep -v -E "^$1=" .env.local || true; echo "$1=$2"; } > .env.local.tmp
+  mv .env.local.tmp .env.local
+}
+
+if [ -z "$(env_get ANTHROPIC_API_KEY)" ] && [ -z "${ANTHROPIC_API_KEY:-}" ]; then
   read -r -s -p "Anthropic API key (Enter to use the simulator): " key || true
   echo
-  workspace=""
-  if [ -n "${key:-}" ]; then
-    read -r -p "Anthropic workspace ID, if the key is not scoped to one (Enter to skip): " workspace || true
-  fi
-  umask 077
-  {
-    echo "ANTHROPIC_API_KEY=${key:-}"
-    echo "ANTHROPIC_WORKSPACE_ID=${workspace:-}"
-  } > .env.local
+  env_set ANTHROPIC_API_KEY "${key:-}"
+fi
+if [ -n "${ANTHROPIC_WORKSPACE_ID:-}" ]; then
+  env_set ANTHROPIC_WORKSPACE_ID "$ANTHROPIC_WORKSPACE_ID"
+elif [ -z "$(env_get ANTHROPIC_WORKSPACE_ID)" ] && [[ "$(env_get ANTHROPIC_API_KEY)" == sk-ant-usr-* ]]; then
+  read -r -p "This key needs a workspace ID (wrkspc_…): " workspace || true
+  env_set ANTHROPIC_WORKSPACE_ID "${workspace:-}"
 fi
 
 PORT="${PORT:-3000}"
