@@ -32,6 +32,7 @@ components and the open Inter typeface. The Emeka design system will be tuned on
 git clone -b claude/peaceful-edison-3aji4m https://github.com/ogasege/project.git
 cd project/savants
 npm run local        # installs, asks for an optional API key, starts, opens http://localhost:3000
+npm run local -- --key sk-ant-… --workspace wrkspc_…   # or pass them in (saved to .env.local)
 ```
 
 Or by hand: `npm install`, `cp .env.example .env.local`, `npm run dev`.
