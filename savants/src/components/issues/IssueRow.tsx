@@ -30,14 +30,14 @@ export const IssueRow = forwardRef<HTMLDivElement, { item: Item; selected?: bool
       onClick={() => router.push(href)}
       onKeyDown={(e) => e.key === "Enter" && router.push(href)}
       className={clsx(
-        "group flex h-9 cursor-default items-center gap-2 border-b border-line/60 px-4 text-[13px] outline-none",
-        selected ? "bg-hover" : "hover:bg-hover/70",
+        "group flex h-11 cursor-default items-center gap-2.5 border-b-[0.5px] border-line-row pl-6 pr-4 text-[13px] outline-none transition-colors duration-100",
+        selected ? "bg-hover" : "hover:bg-hover",
       )}
     >
       <IssuePriority item={item} />
-      <span className="w-[60px] shrink-0 truncate font-mono text-[12px] text-faint">{identifier(db, item)}</span>
+      <span className="w-[56px] shrink-0 truncate text-[13px] font-normal text-faint tabular-nums">{identifier(db, item)}</span>
       <IssueStatus item={item} />
-      <span className="min-w-0 flex-1 truncate text-fg">
+      <span className="min-w-0 flex-1 truncate font-medium text-fg">
         {item.title || "Untitled"}
         {subCount > 0 && <span className="ml-2 text-[11px] text-faint">{subCount} sub-issue{subCount === 1 ? "" : "s"}</span>}
       </span>
@@ -47,13 +47,13 @@ export const IssueRow = forwardRef<HTMLDivElement, { item: Item; selected?: bool
         ))}
       </span>
       {showProject && project && (
-        <span className="hidden max-w-[180px] items-center gap-1.5 truncate rounded border border-line px-2 py-0.5 text-[11px] text-muted md:flex">
+        <span className="hidden h-[22px] max-w-[180px] items-center gap-1.5 truncate rounded-full border-[0.5px] border-line-strong px-2 text-[12px] font-medium text-faint md:flex">
           <ProjectGlyph icon={project.icon} color={project.color} size={12} />
           <span className="truncate">{project.name}</span>
         </span>
       )}
-      {item.dueDate && <span className="hidden w-14 shrink-0 text-right text-[11px] text-muted sm:block">{item.dueDate.slice(5)}</span>}
-      <span className="w-14 shrink-0 text-right text-[11px] text-faint">{relativeTime(item.updatedAt)}</span>
+      {item.dueDate && <span className="hidden w-14 shrink-0 text-right text-[12px] text-faint sm:block">{item.dueDate.slice(5)}</span>}
+      <span className="w-14 shrink-0 text-right text-[12px] text-faint">{relativeTime(item.updatedAt)}</span>
       <IssueAssignee item={item} />
     </div>
   );

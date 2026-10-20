@@ -42,9 +42,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-elev">
       <Sidebar />
-      <main className="flex min-w-0 flex-1 flex-col overflow-hidden bg-bg">{children}</main>
+      {/* Content panel: inset 8px from the window and rounded, one step lighter than the sidebar. */}
+      <main className="my-2 mr-2 flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border-[0.5px] border-line bg-bg shadow-[var(--shadow-panel)]">{children}</main>
       <GlobalOverlays />
     </div>
   );

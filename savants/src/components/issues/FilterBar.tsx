@@ -13,8 +13,8 @@ function toggle<T>(list: T[], v: T): T[] {
   return list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
 }
 
-const chip = "h-6 rounded-md border border-dashed border-line-strong px-2 text-[12px] text-muted hover:border-solid hover:text-fg";
-const activeChip = "border-solid border-accent/60 bg-accent-soft text-fg";
+const chip = "inline-flex h-7 items-center gap-1.5 rounded-md border-[0.5px] border-line-strong bg-panel px-2.5 text-[12px] font-medium text-faint transition-colors hover:bg-hover hover:text-fg";
+const activeChip = "border-accent bg-accent-soft text-fg";
 
 export function FilterBar({ filters, onChange, count }: { filters: IssueFilters; onChange: (f: IssueFilters) => void; count: number }) {
   const db = useStore((s) => s.db);
@@ -23,7 +23,7 @@ export function FilterBar({ filters, onChange, count }: { filters: IssueFilters;
   const projects = useMemo(() => Object.values(db.projects), [db.projects]);
 
   return (
-    <div className="flex h-10 shrink-0 items-center gap-1.5 border-b border-line px-4">
+    <div className="flex h-11 shrink-0 items-center gap-1.5 border-b-[0.5px] border-line pl-4 pr-4">
       <ListFilter size={13} className="text-faint" />
       <Menu
         multi
@@ -49,7 +49,7 @@ export function FilterBar({ filters, onChange, count }: { filters: IssueFilters;
         className={clsx(chip, filters.labelIds.length && activeChip)}
         trigger={<span>Label{filters.labelIds.length ? ` · ${filters.labelIds.length}` : ""}</span>}
         value={filters.labelIds}
-        options={labels.map((l) => ({ value: l.id, label: l.name, icon: <span className="h-2 w-2 rounded" style={{ background: l.color }} /> }))}
+        options={labels.map((l) => ({ value: l.id, label: l.name, icon: <span className="h-2 w-2 rounded-full" style={{ background: l.color }} /> }))}
         onSelect={(v) => onChange({ ...filters, labelIds: toggle(filters.labelIds, v) })}
       />
       <Menu

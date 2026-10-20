@@ -111,6 +111,40 @@ views, comments and file uploads, the shipped client exposes `agents` (`chat`, `
 4. **Meetings are first-class.** Notion ships meeting notes with transcriptions; Savants' call
    ends by writing a summary page with the transcript, board notes and decisions.
 
+
+## Linear's web app (front end), from a browser capture
+
+The founders recorded Linear's web app in Chrome (a sanitized HAR: no cookies or auth headers)
+and ran `scripts/capture-ui-tokens.js` on seven views (Active issues, My issues, Projects, Inbox,
+Reviews, Pulse, Agent). REA analysed the capture:
+
+| Step | REA operation | Evidence id | Notes |
+|---|---|---|---|
+| Capture | `inspect-web-network-capture` (HAR 1.2) | `ev_62b4d469…28d11b` | 1,597 unique `static.linear.app` records (15 MB) after removing duplicates and Stripe; the optional `serverIPAddress` field was dropped because Chrome wrote IPv6 values the HAR 1.2 schema rejects. |
+| Code | `analyze-javascript-application` on the 681 JS / 39 CSS files written out of the capture | `ev_7fecbd38…2a5332` | 1,835,465 AST nodes, 30,298 findings, 0 parse failures. Bundles are minified, so function names are mangled; chunk and CSS-module names survive. |
+
+**What the front end is made of.** 583 named chunks, among them `IssueList`, `IssueViewSplitView`,
+`GroupedDraggableList`, `Board`, `IssuePage`, `IssueCommentsAndHistory`, `NewIssue`, `QuickView`,
+`ContentViewHeaderTitle`, `ContentViewHeaderSearch`, `TeamPageHeader`, `Navigation`,
+`HoverActionRow`, `ListColumns`, `ProjectRoundedIcon` and the `*FilterBlocks` family (Issue, Project,
+Initiative, Team, Member, Pull request). Styling mixes CSS modules with StyleX.
+
+**Where Linear is heading (agents).** `AgentSessionPage`, `ActiveAgentsSection`,
+`LoopsManagementPage`, `LoopTemplateLibrary`, `LoopDraftAgentSidebarContainer`, `LoopLimitsPage`,
+`RegisterLoopRunUsageCostTarget`, `WorkspaceAgentsSettingsPage`, `TeamAgentSkillsSettingsPage`,
+`McpConnectorList`, `TeamTriageMemoriesSettingsPage`, `ScratchpadMemoriesPage`, `DiaryView`,
+`CodingAgentSettingsPage`. Linear ships recurring agent "loops" with usage limits and costs, agent
+skills, MCP connectors and memories: the same direction as savants that own outcomes.
+
+**Design tokens adopted.** From the live app (dark): sidebar `#09090a`, content panel
+`lch(5.52% 0.4 272)`, raised steps `lch(7.32%)` / `lch(9.345%)` / `lch(13.861%)`, text
+`lch(100%)` / `lch(90.451%)` / `lch(61.803%)` / `lch(36.975%)`, borders `lch(9.84–16.32%)` drawn at
+0.5px, accent `lch(47.918% 59.303 288.421)`, focus ring 1px `#5e69d1`, Inter Variable at weights
+450/500, 13px body, 12px meta. Layout: 244px sidebar, content panel inset 8px with a 12px radius,
+44px header rows, 28px sidebar rows, 44px issue rows with 0.5px dividers, 32px menu items, 8px
+control radius, pill labels. Light theme from Linear's own `[data-theme=light]` tokens in the
+captured CSS. Linear's logo, icons and stylesheet files are not copied; the components are our own.
+
 ## Roadmap items surfaced by the evidence
 
 - Issue relations (Blocks / Duplicate / Related / Similar) and project health updates

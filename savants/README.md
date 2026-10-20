@@ -3,9 +3,9 @@
 **Linear and Notion merged into one multiplayer workspace where AI savants are teammates you can
 assign work to and get on a live voice call with to reason through problems together.**
 
-Built on the [Emeka design system](https://github.com/EmekaAITeam/design-system): Geist and Geist
-Mono, light theme canonical with a dark mirror, one 4px radius, 1px rules, no shadows, no emoji, and
-the Emeka mark.
+The interface uses Linear's UI and UX as its baseline: tokens, layout and density measured from
+Linear's web app and recovered with REA (see `docs/REVERSE_ENGINEERING.md`), rebuilt with our own
+components and the open Inter typeface. The Emeka design system will be tuned on top of it.
 
 > Built from [`PROMPT.md`](./PROMPT.md), which is the full product brief derived from the Oct 19
 > "Antler retrospective & new direction" meeting. Read it first: it explains *why* every piece exists.

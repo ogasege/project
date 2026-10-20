@@ -36,12 +36,12 @@ export function seedDB(): DB {
   const db = emptyDB();
   const iso = (offsetDays: number) => new Date(now + offsetDays * day).toISOString().slice(0, 10);
 
-  db.settings = { workspaceName: "Emeka", currentUserId: "u_erioluwa", theme: "light", states: DEFAULT_STATES };
+  db.settings = { workspaceName: "Emeka", currentUserId: "u_erioluwa", theme: "dark", states: DEFAULT_STATES };
 
   const members: Member[] = [
-    { id: "u_erioluwa", kind: "human", name: "Erioluwa Morenikeji", handle: "erioluwa", color: "#5C4B8A", email: "", createdAt: now },
-    { id: "u_cofounder", kind: "human", name: "Co-founder", handle: "cofounder", color: "#1A6F96", createdAt: now },
-    agent("a_atlas", "Atlas", "#00708F", "A", {
+    { id: "u_erioluwa", kind: "human", name: "Erioluwa Morenikeji", handle: "erioluwa", color: "#5e6ad2", email: "", createdAt: now },
+    { id: "u_cofounder", kind: "human", name: "Co-founder", handle: "cofounder", color: "#26b5ce", createdAt: now },
+    agent("a_atlas", "Atlas", "#8b5cf6", "A", {
       role: "Lead strategist",
       lead: true,
       persona:
@@ -49,21 +49,21 @@ export function seedDB(): DB {
       voice: { pitch: 0.95, rate: 1.05 },
       autonomy: "low-risk",
     }, now),
-    agent("a_vera", "Vera", "#94465F", "V", {
+    agent("a_vera", "Vera", "#f43f5e", "V", {
       role: "Skeptic",
       persona:
         "You are Vera, the savants' skeptic. You red-team every claim, look for the wrong vector that compounds over a long horizon, and ask for evidence. You are direct but constructive: every objection comes with what would change your mind.",
       voice: { pitch: 1.15, rate: 1.0 },
       autonomy: "ask",
     }, now),
-    agent("a_forge", "Forge", "#8A5300", "F", {
+    agent("a_forge", "Forge", "#f59e0b", "F", {
       role: "Operator",
       persona:
         "You are Forge, the savants' operator. You turn talk into issues with owners, dates and acceptance criteria. You care about sequencing and what ships this week. When the group converges, you propose the issues.",
       voice: { pitch: 0.8, rate: 1.1 },
       autonomy: "low-risk",
     }, now),
-    agent("a_scout", "Scout", "#0F7A50", "S", {
+    agent("a_scout", "Scout", "#10b981", "S", {
       role: "Researcher",
       persona:
         "You are Scout, the savants' researcher. You ground the conversation in what the workspace and connected apps actually say. You cite pages and issues by name and flag when something is assumed rather than known.",
@@ -74,27 +74,27 @@ export function seedDB(): DB {
   for (const m of members) db.members[m.id] = m;
 
   db.teams = {
-    t_eng: { id: "t_eng", key: "ENG", name: "Engineering", icon: "E", color: "#00708F", nextNumber: 1 },
-    t_gtm: { id: "t_gtm", key: "GTM", name: "Go-to-market", icon: "G", color: "#1A6F96", nextNumber: 1 },
-    t_ops: { id: "t_ops", key: "OPS", name: "Operations", icon: "O", color: "#0F7A50", nextNumber: 1 },
+    t_eng: { id: "t_eng", key: "ENG", name: "Engineering", icon: "E", color: "#5e6ad2", nextNumber: 1 },
+    t_gtm: { id: "t_gtm", key: "GTM", name: "Go-to-market", icon: "G", color: "#26b5ce", nextNumber: 1 },
+    t_ops: { id: "t_ops", key: "OPS", name: "Operations", icon: "O", color: "#4cb782", nextNumber: 1 },
   };
 
   db.labels = {
-    l_app: { id: "l_app", name: "Application", color: "#00708F" },
-    l_valid: { id: "l_valid", name: "Validation", color: "#8A5300" },
-    l_proto: { id: "l_proto", name: "Prototype", color: "#5C4B8A" },
-    l_brand: { id: "l_brand", name: "Brand", color: "#1A6F96" },
-    l_legal: { id: "l_legal", name: "Legal", color: "#94465F" },
-    l_infra: { id: "l_infra", name: "Infra", color: "#3F5B63" },
+    l_app: { id: "l_app", name: "Application", color: "#5e6ad2" },
+    l_valid: { id: "l_valid", name: "Validation", color: "#f2994a" },
+    l_proto: { id: "l_proto", name: "Prototype", color: "#bb87fc" },
+    l_brand: { id: "l_brand", name: "Brand", color: "#26b5ce" },
+    l_legal: { id: "l_legal", name: "Legal", color: "#eb5757" },
+    l_infra: { id: "l_infra", name: "Infra", color: "#4cb782" },
   };
 
   db.projects = {
-    p_yc: { id: "p_yc", name: "YC application", icon: "YC", color: "#3F5B63", description: "Application, founder video, and profiles. YC closes Nov 2; target submit Wednesday.", status: "started", leadId: "u_erioluwa", teamIds: ["t_gtm", "t_eng"], targetDate: iso(2), createdAt: now },
-    p_speedrun: { id: "p_speedrun", name: "a16z Speedrun application", icon: "SR", color: "#7A6A2E", description: "Pitch deck + application. Closes Nov 1.", status: "started", leadId: "u_erioluwa", teamIds: ["t_gtm"], targetDate: iso(2), createdAt: now },
-    p_proto: { id: "p_proto", name: "Savants prototype", icon: "SV", color: "#00708F", description: "The foundation: Linear × Notion workspace where agents co-create, plus the voice call interface.", status: "started", leadId: "u_cofounder", teamIds: ["t_eng"], targetDate: iso(7), createdAt: now },
-    p_gold: { id: "p_gold", name: "Validation: mid-tier gold producers (Ghana)", icon: "AU", color: "#8A5300", description: "First vertical hypothesis. Cold emails → calls → signed LOI.", status: "planned", leadId: "u_erioluwa", teamIds: ["t_gtm"], targetDate: iso(21), createdAt: now },
-    p_flower: { id: "p_flower", name: "Validation: flower growers & exporters (Kenya)", icon: "FL", color: "#94465F", description: "Second vertical hypothesis.", status: "planned", leadId: null, teamIds: ["t_gtm"], targetDate: iso(28), createdAt: now },
-    p_cold: { id: "p_cold", name: "Validation: cold chain", icon: "CC", color: "#1A6F96", description: "Third vertical hypothesis.", status: "planned", leadId: null, teamIds: ["t_gtm"], targetDate: iso(28), createdAt: now },
+    p_yc: { id: "p_yc", name: "YC application", icon: "YC", color: "#f97316", description: "Application, founder video, and profiles. YC closes Nov 2; target submit Wednesday.", status: "started", leadId: "u_erioluwa", teamIds: ["t_gtm", "t_eng"], targetDate: iso(2), createdAt: now },
+    p_speedrun: { id: "p_speedrun", name: "a16z Speedrun application", icon: "SR", color: "#eab308", description: "Pitch deck + application. Closes Nov 1.", status: "started", leadId: "u_erioluwa", teamIds: ["t_gtm"], targetDate: iso(2), createdAt: now },
+    p_proto: { id: "p_proto", name: "Savants prototype", icon: "SV", color: "#8b5cf6", description: "The foundation: Linear × Notion workspace where agents co-create, plus the voice call interface.", status: "started", leadId: "u_cofounder", teamIds: ["t_eng"], targetDate: iso(7), createdAt: now },
+    p_gold: { id: "p_gold", name: "Validation: mid-tier gold producers (Ghana)", icon: "AU", color: "#d4a017", description: "First vertical hypothesis. Cold emails → calls → signed LOI.", status: "planned", leadId: "u_erioluwa", teamIds: ["t_gtm"], targetDate: iso(21), createdAt: now },
+    p_flower: { id: "p_flower", name: "Validation: flower growers & exporters (Kenya)", icon: "FL", color: "#ec4899", description: "Second vertical hypothesis.", status: "planned", leadId: null, teamIds: ["t_gtm"], targetDate: iso(28), createdAt: now },
+    p_cold: { id: "p_cold", name: "Validation: cold chain", icon: "CC", color: "#38bdf8", description: "Third vertical hypothesis.", status: "planned", leadId: null, teamIds: ["t_gtm"], targetDate: iso(28), createdAt: now },
   };
 
   db.cycles = {

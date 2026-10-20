@@ -67,7 +67,7 @@ export function IssueList({
         title={emptyTitle}
         body={emptyBody}
         action={
-          <button className="btn-solid mt-2 rounded border border-fg bg-fg px-3 py-1.5 text-bg" onClick={() => setUI({ createIssue: { ...createDefaults } })}>
+          <button className="btn-solid mt-2 h-7 rounded-md bg-accent px-3 text-[13px] font-medium text-accent-fg" onClick={() => setUI({ createIssue: { ...createDefaults } })}>
             Create issue <span className="ml-1 opacity-70">C</span>
           </button>
         }
@@ -83,7 +83,7 @@ export function IssueList({
         const isCollapsed = !!collapsed[state.id];
         return (
           <section key={state.id}>
-            <div className="sticky top-0 z-10 flex h-9 items-center gap-2 border-b border-line bg-elev px-4">
+            <div className="sticky top-0 z-10 flex h-9 items-center gap-2 bg-panel pl-4 pr-3">
               <button
                 className="flex items-center gap-2 text-[13px] font-medium"
                 onClick={() => setCollapsed((c) => ({ ...c, [state.id]: !c[state.id] }))}

@@ -31,7 +31,7 @@ export function TeamHeader({ team }: { team: Team }) {
   return (
     <PageHeader
       icon={
-        <span className="flex h-5 w-5 items-center justify-center rounded text-[11px] text-white" style={{ background: team.color }}>
+        <span className="flex h-[18px] w-[18px] items-center justify-center rounded-[5px] text-[10px] font-semibold text-white" style={{ background: team.color }}>
           {team.icon}
         </span>
       }
@@ -43,7 +43,7 @@ export function TeamHeader({ team }: { team: Team }) {
               <Link
                 key={t.href}
                 href={t.href}
-                className={clsx("rounded-md px-2 py-0.5 text-[12px]", path === t.href ? "bg-active text-fg" : "text-muted hover:bg-hover hover:text-fg")}
+                className={clsx("inline-flex h-7 items-center rounded-full border-[0.5px] px-3 text-[12px] font-medium transition-colors", path === t.href ? "border-line-strong bg-active text-fg" : "border-transparent text-faint hover:bg-hover hover:text-fg")}
               >
                 {t.label}
               </Link>

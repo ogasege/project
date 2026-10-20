@@ -13,7 +13,7 @@ export function Avatar({ member, size = 20, ring = false }: { member?: Member | 
   if (!member)
     return (
       <span
-        className="inline-flex shrink-0 items-center justify-center rounded border border-dashed border-line-strong text-faint"
+        className="inline-flex shrink-0 items-center justify-center rounded-full border border-dashed border-line-strong text-faint"
         style={{ width: size, height: size, fontSize: size * 0.45 }}
         aria-label="Unassigned"
       >
@@ -24,7 +24,7 @@ export function Avatar({ member, size = 20, ring = false }: { member?: Member | 
   return (
     <span
       title={`${member.name}${isAgent ? ` · ${member.agent?.role ?? "Agent"}` : ""}`}
-      className={clsx("relative inline-flex shrink-0 items-center justify-center font-mono font-medium text-white", isAgent ? "rounded-[2px]" : "rounded", ring && "outline outline-2 outline-bg")}
+      className={clsx("relative inline-flex shrink-0 items-center justify-center font-semibold text-white", isAgent ? "rounded-[30%]" : "rounded-full", ring && "outline outline-2 outline-bg")}
       style={{ width: size, height: size, fontSize: Math.max(8, size * 0.42), background: member.color, letterSpacing: 0 }}
     >
       {isAgent ? member.avatar ?? member.name[0] : initials(member.name)}
@@ -100,12 +100,12 @@ export function Button({ variant = "subtle", size = "md", className, ...rest }: 
     <button
       {...rest}
       className={clsx(
-        "inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded border font-medium transition-[opacity,color,border-color] disabled:cursor-not-allowed disabled:opacity-60",
-        size === "sm" ? "h-6 px-2 text-xs" : "h-[30px] px-3.5 text-[12px]",
-        variant === "primary" && "btn-solid border-fg bg-fg text-bg",
-        variant === "subtle" && "border-line-strong bg-transparent text-muted hover:border-fg hover:text-fg",
-        variant === "ghost" && "border-transparent text-muted hover:bg-hover hover:text-fg",
-        variant === "danger" && "border-danger bg-transparent text-danger hover:bg-tint-red",
+        "inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-md border-[0.5px] font-medium transition-colors duration-100 disabled:cursor-not-allowed disabled:opacity-50",
+        size === "sm" ? "h-6 px-2 text-[12px]" : "h-7 px-3 text-[13px]",
+        variant === "primary" && "btn-solid border-transparent bg-accent text-accent-fg",
+        variant === "subtle" && "border-line-strong bg-panel text-muted shadow-[var(--shadow-panel)] hover:bg-hover hover:text-fg",
+        variant === "ghost" && "border-transparent text-faint hover:bg-hover hover:text-fg",
+        variant === "danger" && "border-transparent bg-danger text-white hover:brightness-110",
         className,
       )}
     />
@@ -199,7 +199,7 @@ export function Menu<T>({
         createPortal(
           <div
             data-menu-panel
-            className="animate-fade-in fixed z-[100] w-60 overflow-hidden rounded border border-line-strong bg-bg"
+            className="animate-fade-in fixed z-[100] w-60 overflow-hidden rounded-lg border-[0.5px] border-line-strong bg-menu shadow-[var(--shadow-menu)]"
             style={{ top: pos.top, left: pos.left }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -217,7 +217,7 @@ export function Menu<T>({
                 else if (e.key === "Escape") { e.stopPropagation(); setOpen(false); }
               }}
               placeholder={placeholder}
-              className="w-full border-b border-line bg-transparent px-3 py-2 text-[13px] outline-none placeholder:text-faint"
+              className="w-full border-b-[0.5px] border-line bg-transparent px-3 py-2.5 text-[13px] outline-none placeholder:text-faint"
             />
             <div role="listbox" className="max-h-72 overflow-y-auto p-1">
               {filtered.length === 0 && <div className="px-2 py-1.5 text-faint">No results</div>}
@@ -228,7 +228,7 @@ export function Menu<T>({
                   aria-selected={isSelected(o.value)}
                   onMouseEnter={() => setActive(i)}
                   onClick={() => choose(o)}
-                  className={clsx("flex w-full items-center gap-2 rounded px-2 py-1.5 text-left", i === active && "bg-hover")}
+                  className={clsx("flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-[13px] text-muted", i === active && "bg-hover text-fg")}
                 >
                   {o.icon}
                   <span className="flex-1 truncate">{o.label}</span>
@@ -255,12 +255,12 @@ export function Modal({ open, onClose, children, className, label }: { open: boo
   }, [open, onClose]);
   if (!open) return null;
   return createPortal(
-    <div className="fixed inset-0 z-[90] flex items-start justify-center bg-[var(--scrim)] pt-[12vh]" onMouseDown={onClose}>
+    <div className="fixed inset-0 z-[90] flex items-start justify-center bg-[var(--scrim)] pt-[14vh]" onMouseDown={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={label}
-        className={clsx("animate-fade-in w-[640px] max-w-[94vw] overflow-hidden rounded border border-line-strong bg-bg", className)}
+        className={clsx("animate-fade-in w-[640px] max-w-[94vw] overflow-hidden rounded-xl border-[0.5px] border-line-strong bg-menu shadow-[var(--shadow-menu)]", className)}
         onMouseDown={(e) => e.stopPropagation()}
       >
         {children}
@@ -273,7 +273,7 @@ export function Modal({ open, onClose, children, className, label }: { open: boo
 // ---------- Layout bits ----------
 export function PageHeader({ title, icon, children }: { title: React.ReactNode; icon?: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <header className="flex h-[52px] shrink-0 items-center gap-2 border-b border-line bg-elev px-4">
+    <header className="flex h-11 shrink-0 items-center gap-2 border-b-[0.5px] border-line px-4">
       {icon}
       <h1 className="truncate text-[13px] font-medium">{title}</h1>
       <div className="ml-auto flex items-center gap-1.5">{children}</div>
@@ -293,8 +293,8 @@ export function EmptyState({ title, body, action }: { title: string; body?: stri
 
 export function LabelPill({ name, color }: { name: string; color: string }) {
   return (
-    <span className="inline-flex h-5 items-center gap-1.5 rounded border border-line px-1.5 text-[11px] text-muted">
-      <span className="h-1.5 w-1.5 rounded-[1px]" style={{ background: color }} />
+    <span className="inline-flex h-[22px] items-center gap-1.5 rounded-full border-[0.5px] border-line-strong px-2 text-[12px] font-medium text-faint">
+      <span className="h-2 w-2 rounded-full" style={{ background: color }} />
       {name}
     </span>
   );

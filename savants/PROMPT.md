@@ -220,15 +220,13 @@ you were on a call with colleagues.
   incorporation, cold-email automation, website copy, Speedrun deck, renew GitHub subscription…).
 - Accessible: keyboard-navigable, visible focus, labelled controls, reduced-motion respected.
 
-## 6.5 Brand: the Emeka design system
+## 6.5 Baseline UI: Linear
 
-The product ships under Emeka's brand, built from `EmekaAITeam/design-system`. The AI teammates are
-called **savants**, never "council" or "agents" in user-facing copy where a name is needed.
-Follow the system's five rules: Geist Mono means a machine said it; signal colour is a claim about
-evidence, never emphasis; no shadows, one 4px radius, near-square 2px markers; absence is content;
-the deterministic and advisory voices never blur. Light theme is canonical; dark is the mirror (the
-call room is always dark). No emoji anywhere, no decorative gradients, no blur. Use the real Emeka
-mark and fonts from the design system, and the real brand logo of every integration.
+The interface copies Linear's UI and UX as its baseline (decided by the founders): measure the live
+app (tokens, type, spacing, layout) and recover its front end with REA, then rebuild it with our own
+components and open fonts. Do not copy Linear's logo, icon set or stylesheet files. The Emeka
+design system and the final platform UI are then tuned on top of this baseline. The AI teammates
+are called **savants**.
 
 ## 7. Out of scope for v0 (roadmap)
 Real auth and multi-tenant workspaces · CRDT text merging (v0 is last-write-wins per block) ·

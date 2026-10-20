@@ -108,7 +108,7 @@ export default function InboxPage() {
 
         {groups.map((g) => (
           <section key={g.title}>
-            <h2 className="sticky top-0 z-10 border-b border-line bg-elev px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">{g.title}</h2>
+            <h2 className="sticky top-0 z-10 border-b-[0.5px] border-line bg-panel px-4 py-1.5 text-[12px] font-medium text-faint">{g.title}</h2>
             {g.rows.map((a) => {
               const actor = db.members[a.actorId];
               const item = a.itemId ? db.items[a.itemId] : null;

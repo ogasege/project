@@ -8,15 +8,14 @@ export const PRIORITIES: { value: Priority; label: string }[] = [
   { value: 4, label: "Low" },
 ];
 
-// Status colours follow Emeka's meaning: green only for done (passed), grey ramp for not started,
-// the line-2 inert grey for canceled (decided and closed).
+// Linear's default workflow state colours.
 export const DEFAULT_STATES: WorkflowState[] = [
-  { id: "st_backlog", name: "Backlog", type: "backlog", color: "#98A0A5" },
-  { id: "st_todo", name: "Todo", type: "unstarted", color: "#5E676C" },
-  { id: "st_progress", name: "In progress", type: "started", color: "#00708F" },
-  { id: "st_review", name: "In review", type: "review", color: "#5C4B8A" },
-  { id: "st_done", name: "Done", type: "completed", color: "#0F7A50" },
-  { id: "st_canceled", name: "Canceled", type: "canceled", color: "#B7BEC3" },
+  { id: "st_backlog", name: "Backlog", type: "backlog", color: "#bec2c8" },
+  { id: "st_todo", name: "Todo", type: "unstarted", color: "#e2e2e2" },
+  { id: "st_progress", name: "In Progress", type: "started", color: "#f2c94c" },
+  { id: "st_review", name: "In Review", type: "review", color: "#4cb782" },
+  { id: "st_done", name: "Done", type: "completed", color: "#5e6ad2" },
+  { id: "st_canceled", name: "Canceled", type: "canceled", color: "#95a2b3" },
 ];
 
 export const STATUS_ORDER: StatusType[] = ["started", "review", "unstarted", "backlog", "completed", "canceled"];

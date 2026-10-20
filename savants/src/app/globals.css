@@ -1,74 +1,84 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
 
-/* Emeka design system tokens (EmekaAITeam/design-system v1.0.0), mapped onto this app's names.
-   Light is canonical: white content wells inside light-grey chrome, figure and ground carried by
-   that pair plus a 1px rule, never by shadow. Dark is the console mirror. */
+/* Linear baseline. Values measured from Linear's web app (dark theme, captured 2026-10-20 with
+   scripts/capture-ui-tokens.js): one cool hue (LCH 272), a near-black sidebar, a content panel
+   inset 8px and one step lighter, 0.5px hairlines, Inter Variable at weight 450 for body text.
+   Light theme from Linear's [data-theme=light] tokens recovered with REA. */
 
-@font-face { font-family: "Geist"; src: url("/fonts/Geist-Variable.ttf") format("truetype-variations"); font-weight: 100 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Geist"; src: url("/fonts/Geist-Italic-Variable.ttf") format("truetype-variations"); font-weight: 100 900; font-style: italic; font-display: swap; }
-@font-face { font-family: "Geist Mono"; src: url("/fonts/GeistMono-Variable.ttf") format("truetype-variations"); font-weight: 100 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Geist Mono"; src: url("/fonts/GeistMono-Italic-Variable.ttf") format("truetype-variations"); font-weight: 100 900; font-style: italic; font-display: swap; }
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-Variable.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
-:root {
-  --bg: #ffffff;          /* content well */
-  --bg-elev: #f4f6f7;     /* chrome: rail, topbars, panel headers */
-  --bg-panel: #eef1f3;
-  --bg-hover: #eef1f3;
-  --bg-active: #e8ebed;
-  --border: #d7dce0;
-  --border-strong: #b7bec3;
-  --fg: #0b0d0e;
-  --fg-muted: #4b5358;
-  --fg-faint: #5e676c;    /* ink-3: the lightest ink allowed for text (AA) */
-  --fg-disabled: #98a0a5;
-  --accent: #00708f;      /* the agent's voice, and selection */
+:root,
+[data-theme="light"] {
+  /* Light values from Linear's own light theme ([data-theme=light] in static.linear.app CSS,
+     recovered with REA from the HAR capture); sidebar measured in the app. */
+  --bg-sidebar: #efeff0;
+  --bg: #fdfdfd;            /* content panel */
+  --bg-elev: #efeff0;       /* chrome */
+  --bg-panel: #f4f2f4;      /* --color-bg-tertiary: group headers, inputs */
+  --bg-hover: #eeedef;      /* --color-bg-quaternary */
+  --bg-active: #e9e8ea;     /* --color-bg-quinary */
+  --bg-menu: #ffffff;
+  --border: #e9e8ea;        /* --color-border-primary */
+  --border-row: #e4e2e4;    /* --color-border-secondary */
+  --border-strong: #dcdbdd; /* --color-border-tertiary */
+  --fg: #282a30;            /* --color-text-primary */
+  --fg-muted: #3c4149;      /* --color-text-secondary */
+  --fg-faint: #6f6e77;      /* --color-text-tertiary */
+  --fg-disabled: #86848d;   /* --color-text-quaternary */
+  --fg-sidebar: #5f5e66;
+  --accent: #5e6ad2;
   --accent-fg: #ffffff;
-  --accent-soft: #e3f2f8; /* tint-blue: selected */
-  --danger: #c42b1c;
-  --success: #0f7a50;
-  --warning: #8a5300;
-  --tint-red: #fbe9e7;
-  --tint-green: #e4f2eb;
-  --tint-amber: #f7eee0;
-  --scrim: rgba(11, 13, 14, 0.42);
-  --shadow: none;
-  --emeka-cyan: #23c2ff;
-  --emeka-mint: #a4fdcb;
-  /* Categorical identity colours (viz ramp) for savants, teams and projects. Never signal colour. */
-  --viz-1: #00708f;
-  --viz-2: #0f7a50;
-  --viz-3: #8a5300;
-  --viz-4: #5c4b8a;
-  --viz-5: #1a6f96;
-  --viz-6: #7a6a2e;
-  --viz-7: #94465f;
-  --viz-8: #3f5b63;
+  --accent-soft: #f1f1ff;   /* --color-accent-tint */
+  --danger: #eb5757;
+  --success: #4cb782;
+  --warning: #f2994a;
+  --tint-red: rgb(235 87 87 / 0.1);
+  --tint-green: rgb(76 183 130 / 0.1);
+  --tint-amber: rgb(242 153 74 / 0.12);
+  --scrim: rgb(0 0 0 / 0.25);
+  --shadow-panel: 0 0.5px 1px 1px rgb(0 0 0 / 0.04);
+  --shadow-menu: 0 3px 8px rgb(0 0 0 / 0.08), 0 2px 5px rgb(0 0 0 / 0.06), 0 1px 1px rgb(0 0 0 / 0.06);
+  --shadow: var(--shadow-menu);
   color-scheme: light;
 }
 
 :root[data-theme="dark"],
 [data-theme="dark"] {
-  --bg: #000000;
-  --bg-elev: #050607;
-  --bg-panel: #0e1114;
-  --bg-hover: #0e1114;
-  --bg-active: #101314;
-  --border: #1e2226;
-  --border-strong: #2a2f33;
-  --fg: #ffffff;
-  --fg-muted: #9ba3a8;
-  --fg-faint: #8a9299;
-  --fg-disabled: #5e666b;
-  --accent: #19d1ff;
-  --accent-fg: #000000;
-  --accent-soft: #0a1418;
-  --danger: #ff4d3d;
-  --success: #4fd39a;
-  --warning: #ffb020;
-  --tint-red: #120a0a;
-  --tint-green: #08140f;
-  --tint-amber: #141005;
-  --scrim: rgba(0, 0, 0, 0.66);
+  --bg-sidebar: #09090a;
+  --bg: lch(5.52% 0.4 272);                 /* --color-bg-primary */
+  --bg-elev: #09090a;                       /* --bg-sidebar-dark */
+  --bg-panel: lch(7.32% 0.85 272);          /* --color-bg-secondary */
+  --bg-hover: lch(9.345% 0.85 272);         /* --color-bg-quaternary */
+  --bg-active: lch(13.861% 1.043 272);
+  --bg-menu: lch(9.232% 0.85 272);
+  --border: lch(14.16% 1.48 272);           /* --color-border-secondary */
+  --border-row: lch(16.32% 1.48 272);       /* --color-border-tertiary: list row dividers */
+  --border-strong: lch(22.193% 1.93 272);
+  --fg: lch(100% 0 272);                    /* --color-text-primary */
+  --fg-muted: lch(90.451% 1.2 272);         /* --color-text-secondary */
+  --fg-faint: lch(61.803% 1.2 272);         /* --color-text-tertiary */
+  --fg-disabled: lch(36.975% 1.2 272);      /* --color-text-quaternary */
+  --fg-sidebar: lch(60.621% 1.2 272);
+  --accent: lch(47.918% 59.303 288.421);
+  --accent-fg: #ffffff;
+  --accent-soft: lch(47.918% 59.303 288.421 / 0.18);
+  --danger: #eb5757;
+  --success: #4cb782;
+  --warning: #f2994a;
+  --tint-red: rgb(235 87 87 / 0.12);
+  --tint-green: rgb(76 183 130 / 0.12);
+  --tint-amber: rgb(242 153 74 / 0.14);
+  --scrim: rgb(0 0 0 / 0.5);
+  --shadow-panel: 0 0.5px 1px 1px lch(0% 0 0 / 0.3);
+  --shadow-menu: 0 3px 8px lch(0% 0 0 / 0.125), 0 2px 5px lch(0% 0 0 / 0.125), 0 1px 1px lch(0% 0 0 / 0.125);
+  --shadow: var(--shadow-menu);
   color-scheme: dark;
 }
 
@@ -78,12 +88,15 @@
   --color-panel: var(--bg-panel);
   --color-hover: var(--bg-hover);
   --color-active: var(--bg-active);
+  --color-menu: var(--bg-menu);
   --color-line: var(--border);
+  --color-line-row: var(--border-row);
   --color-line-strong: var(--border-strong);
   --color-fg: var(--fg);
   --color-muted: var(--fg-muted);
   --color-faint: var(--fg-faint);
   --color-disabled: var(--fg-disabled);
+  --color-sidebar: var(--fg-sidebar);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
   --color-accent-soft: var(--accent-soft);
@@ -93,76 +106,82 @@
   --color-tint-red: var(--tint-red);
   --color-tint-green: var(--tint-green);
   --color-tint-amber: var(--tint-amber);
-  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-serif: "Geist", system-ui, sans-serif;
-  /* One radius. Every rounded-* utility resolves to 4px; markers use 2px. */
-  --radius-xs: 2px;
+  --font-sans: "Inter Variable", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-serif: "Inter Variable", -apple-system, sans-serif;
+  --radius-xs: 3px;
   --radius-sm: 4px;
-  --radius-md: 4px;
-  --radius-lg: 4px;
-  --radius-xl: 4px;
-  --radius-2xl: 4px;
-  --radius-3xl: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --font-weight-normal: 450;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
 }
 
 html,
 body {
   height: 100%;
-  background: var(--bg);
+  background: var(--bg-sidebar);
   color: var(--fg);
 }
 
 body {
   font-family: var(--font-sans);
   font-size: 13px;
-  line-height: 1.55;
-  letter-spacing: -0.01em;
+  font-weight: 450;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Geist Mono means a machine said it. Labels, states, identifiers, figures, timestamps. */
+/* Small section label (sidebar groups, panel headings). */
 .mono-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--fg-faint);
 }
+
 .font-mono {
   font-variant-numeric: tabular-nums;
 }
 
-/* No shadow system: depth is a surface step plus a rule. */
-* {
-  box-shadow: none !important;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-strong) transparent;
-}
-
-/* The one permitted box-shadow: the selection marker, an inset 2px accent bar with no blur. */
+/* Kept for the selected-row marker used by a few lists. */
 .marker-selected {
-  box-shadow: inset 2px 0 0 var(--accent) !important;
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 
-/* Phosphor-light-like stroke for the line icon set. */
-svg.lucide {
-  stroke-width: 1.5;
+/* Hover on a solid control brightens slightly. */
+.btn-solid:hover {
+  filter: brightness(1.08);
+}
+
+/* Hairlines: Linear draws dividers at 0.5px. */
+.hairline-b {
+  border-bottom: 0.5px solid var(--border-row);
+}
+.hairline {
+  border: 0.5px solid var(--border);
 }
 
 ::selection {
   background: var(--accent-soft);
 }
 
-/* Focus: 1px accent outline at 1px offset. No glow. */
 *:focus-visible {
   outline: 1px solid var(--accent);
   outline-offset: 1px;
 }
 
-/* Hover on a solid control dims; there is no press state. */
-.btn-solid:hover {
-  opacity: 0.86;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+svg.lucide {
+  stroke-width: 1.75;
 }
 
 .kbd {
@@ -172,12 +191,13 @@ svg.lucide {
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
-  border-radius: 2px;
-  border: 1px solid var(--border);
-  background: var(--bg);
+  border-radius: 4px;
+  border: 0.5px solid var(--border-strong);
+  background: var(--bg-panel);
   color: var(--fg-faint);
-  font-size: 10px;
-  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-sans);
 }
 
 /* Document canvas */
@@ -192,19 +212,17 @@ svg.lucide {
   pointer-events: none;
 }
 
-/* Entrance: fade with a 6px rise. Motion reports state; it never entertains. */
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px) scale(0.99); }
   to { opacity: 1; transform: none; }
 }
 .animate-fade-in {
-  animation: fade-in 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation: fade-in 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Live process: blinks to 0.15 on a 2.4s loop. Static state never blinks. */
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.15; }
+  50% { opacity: 0.25; }
 }
 
 @media (prefers-reduced-motion: reduce) {
