@@ -88,7 +88,7 @@ export function Lobby() {
             </p>
 
             <div className="mt-6">
-              <div className="mb-2 text-[11px] font-medium uppercase tracking-wider text-faint">Who&apos;s on the call</div>
+              <div className="mb-2 text-[12px] font-medium text-faint">Who&apos;s on the call</div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {savants.map((a) => {
                   const on = selected.includes(a.id);
@@ -114,7 +114,7 @@ export function Lobby() {
             </div>
 
             <div className="mt-5">
-              <div className="mb-2 text-[11px] font-medium uppercase tracking-wider text-faint">What are we talking about</div>
+              <div className="mb-2 text-[12px] font-medium text-faint">What are we talking about</div>
               <div className="flex flex-wrap items-center gap-1.5">
                 {context.map((id) => {
                   const it = db.items[id];

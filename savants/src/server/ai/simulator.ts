@@ -113,9 +113,10 @@ export function planCallTurn(db: DB, call: Call, agent: Member): SimPlan {
       break;
     }
     case "skeptic": {
-      const subject = ctxTitle && /assumption|weak|risk|wrong/i.test(said) ? `"${ctxTitle}"` : topic;
+      // A short noun phrase, never a quoted page title mid-sentence.
+      const subject = ctxTitle && topic === ctxTitle.replace(/[?.!]+$/, "") ? "this idea" : topic;
       text = /weakest|riskiest|assumption|wrong/i.test(said)
-        ? `The weakest assumption is that buyers will pay for ${subject} before we've shown it working on their own data. Right now we have conviction, not evidence. What would change my mind is three customers telling us they'd pay, not three telling us it's interesting.`
+        ? `The weakest assumption in ${subject} is that buyers will pay before we've shown it working on their own data. Right now we have conviction, not evidence. What would change my mind is three customers telling us they'd pay, not three telling us it's interesting.`
         : pick(
             [
               `I'm going to push back on ${topic}. It sounds right, but it's an assumption, not a fact yet. What would change my mind is three customers telling us they'd pay for it, not three telling us it's interesting.`,

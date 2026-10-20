@@ -67,7 +67,7 @@ export async function* runAgent(opts: RunOptions): AsyncGenerator<AgentEvent> {
       err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError || err instanceof Anthropic.BadRequestError || err instanceof Anthropic.NotFoundError;
     if (!config || produced) throw err;
     console.error(`[savants] live model unavailable, using simulator: ${(err as Error).message}`);
-    yield { type: "error", message: `Live model unavailable (${(err as InstanceType<typeof Anthropic.APIError>).status}); this turn ran on the simulator.` };
+    yield { type: "error", message: `Simulator · the live model isn’t reachable with this API key (${(err as InstanceType<typeof Anthropic.APIError>).status})` };
     yield* runSimulated(opts);
   }
 }

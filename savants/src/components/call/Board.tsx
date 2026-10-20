@@ -25,11 +25,11 @@ export function ReasoningBoard({ notes, proposals, freshIds }: { notes: BoardNot
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-2 px-4 pt-4 pb-2">
-        <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Reasoning board</h2>
-        <span className="ml-auto text-[11px] text-faint">{notes.length} notes</span>
+        <h2 className="text-[12px] font-medium text-faint">Reasoning board</h2>
+        <span className="ml-auto text-[12px] text-faint">{notes.length} {notes.length === 1 ? "note" : "notes"}</span>
       </div>
       <div className="flex-1 space-y-4 overflow-y-auto px-4 pb-4">
-        {!groups.length && <p className="text-xs leading-relaxed text-faint">As the savants talks, they pin claims, assumptions, questions, risks, decisions and actions here. This becomes the call&apos;s summary.</p>}
+        {!groups.length && <p className="text-xs leading-relaxed text-faint">As the savants talk, they pin claims, assumptions, questions, risks, decisions and actions here. This becomes the call&apos;s summary.</p>}
         {groups.map((g) => (
           <section key={g.kind}>
             <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium" style={{ color: NOTE_STYLE[g.kind].color }}>

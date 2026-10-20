@@ -139,7 +139,7 @@ export function CallRoom({ callId }: { callId: string }) {
     if (noteCount > prevNotes.current) {
       const added = call.notes.slice(prevNotes.current);
       setFreshNotes(new Set(added.map((n) => n.id)));
-      for (const n of added) toast(`${db.members[n.authorId]?.name ?? "Agent"} pinned a ${n.kind}`, db.members[n.authorId]?.color ?? "#888");
+      for (const n of added) toast(`${db.members[n.authorId]?.name ?? "A savant"} pinned ${/^[aeiou]/.test(n.kind) ? "an" : "a"} ${n.kind}`, db.members[n.authorId]?.color ?? "#888");
     }
     prevNotes.current = noteCount;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -421,7 +421,9 @@ export function CallRoom({ callId }: { callId: string }) {
 
   const activeSpeaker = live?.speakerId ? db.members[live.speakerId] : null;
   const tint = interim && phase === "idle" ? me?.color ?? "#19D1FF" : activeSpeaker?.color ?? "#19D1FF";
-  const orbSize = participants.length > 3 ? 112 : 132;
+  const orbSize = participants.length > 3 ? 100 : 124;
+  // Room for the loudest ticks (they reach ~0.74 × size from the centre), so names never collide.
+  const slot = Math.round(orbSize * 1.5);
   const getAgentLevel = (id: string) => () => (live?.speakerId === id ? levelRef.current : 0);
   const getMyLevel = () => meterRef.current?.level() ?? 0;
   const captionText = interim && phase === "idle" ? interim : live?.text ?? "";
@@ -438,9 +440,9 @@ export function CallRoom({ callId }: { callId: string }) {
         <div className="flex min-w-0 flex-col">
           <span className="truncate text-[14px] font-medium">{call.title}</span>
           <span className="flex items-center gap-2 text-[11px] text-faint">
-            {ended ? <span className="font-mono uppercase tracking-[0.14em]">Ended</span> : <span className="flex items-center gap-1.5 font-mono uppercase tracking-[0.14em] text-success"><span className="h-1.5 w-1.5 animate-[blink_2.4s_ease-in-out_infinite] rounded-[1px] bg-success" /> Live</span>}
+            {ended ? <span>Ended</span> : <span className="flex items-center gap-1.5 text-success"><span className="h-1.5 w-1.5 animate-[blink_2.4s_ease-in-out_infinite] rounded-[1px] bg-success" /> Live</span>}
             <span className="tabular-nums">{clock}</span>
-            {aiStatus && <span className="rounded-[2px] border border-line px-1.5 font-mono uppercase tracking-[0.12em] text-faint">{aiStatus.live ? aiStatus.defaultModel : "Simulator"}</span>}
+            {aiStatus && <span className="rounded-full border-[0.5px] border-line-strong px-2 text-faint">{aiStatus.live ? aiStatus.defaultModel : "Simulator"}</span>}
           </span>
         </div>
         <div className="ml-4 hidden min-w-0 flex-1 items-center gap-1.5 overflow-hidden md:flex">
@@ -465,7 +467,7 @@ export function CallRoom({ callId }: { callId: string }) {
         {/* Transcript */}
         {showTranscript && (
           <aside className="hidden w-72 shrink-0 flex-col border-r border-line lg:flex" aria-label="Transcript">
-            <h2 className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Transcript</h2>
+            <h2 className="px-4 pt-3 pb-2 text-[12px] font-medium text-faint">Transcript</h2>
             <div className="flex-1 space-y-3 overflow-y-auto px-4 pb-4 text-[12.5px] leading-relaxed">
               {call.turns.map((t) => {
                 const m = db.members[t.speakerId];
@@ -497,15 +499,13 @@ export function CallRoom({ callId }: { callId: string }) {
 
         {/* Stage */}
         <section className="relative flex min-w-0 flex-1 flex-col items-center justify-center px-6" aria-label="Call stage">
-          <div className="flex flex-wrap items-end justify-center gap-x-6 gap-y-10">
+          <div className="flex flex-wrap items-start justify-center gap-x-3 gap-y-8">
             {participants.map((p, i) => {
               const isSpeaker = live?.speakerId === p.id;
               const state: OrbState = isSpeaker ? (phase === "speaking" ? "speaking" : "thinking") : "idle";
               const hand = hands.find((h) => h.agentId === p.id);
-              const mid = (participants.length - 1) / 2;
-              const lift = Math.round(-Math.cos(((i - mid) / Math.max(1, participants.length)) * Math.PI) * 26);
               return (
-                <div key={p.id} className="relative flex flex-col items-center" style={{ transform: `translateY(${lift}px)` }}>
+                <div key={p.id} className="relative flex flex-col items-center">
                   {hand && (
                     <button
                       onClick={() => void sendTurn("", p.id)}
@@ -517,10 +517,16 @@ export function CallRoom({ callId }: { callId: string }) {
                       <span className="truncate">{hand.preview}</span>
                     </button>
                   )}
-                  <button onClick={() => void sendTurn("", p.id)} disabled={ended} aria-label={`Give ${p.name} the floor`} className="rounded focus-visible:outline-offset-8">
+                  <button
+                    onClick={() => void sendTurn("", p.id)}
+                    disabled={ended}
+                    aria-label={`Give ${p.name} the floor`}
+                    className="flex items-center justify-center rounded-full focus-visible:outline-offset-4"
+                    style={{ width: slot, height: slot }}
+                  >
                     <Orb color={p.color} state={state} getLevel={getAgentLevel(p.id)} size={orbSize} dim={!!live?.speakerId && !isSpeaker} />
                   </button>
-                  <div className="mt-1 text-center">
+                  <div className="text-center">
                     <div className={clsx("text-[13px] font-medium transition-colors", isSpeaker ? "text-fg" : "text-muted")}>{p.name}</div>
                     <div className="text-[11px] text-faint">{isSpeaker ? (phase === "thinking" ? "thinking…" : "speaking") : p.agent?.role}</div>
                   </div>
@@ -528,9 +534,11 @@ export function CallRoom({ callId }: { callId: string }) {
               );
             })}
             {/* You */}
-            <div className="relative flex flex-col items-center" style={{ transform: "translateY(36px)" }}>
-              <Orb color={me?.color ?? "#5C4B8A"} state={micActive ? "listening" : "idle"} getLevel={getMyLevel} size={Math.round(orbSize * 0.7)} dim={micMode === "off"} />
-              <div className="mt-1 text-center">
+            <div className="relative flex flex-col items-center">
+              <div className="flex items-center justify-center" style={{ width: Math.round(slot * 0.75), height: slot }}>
+                <Orb color={me?.color ?? "#5e6ad2"} state={micActive ? "listening" : "idle"} getLevel={getMyLevel} size={Math.round(orbSize * 0.62)} dim={micMode === "off"} />
+              </div>
+              <div className="text-center">
                 <div className="text-[13px] font-medium text-muted">{me?.name.split(" ")[0] ?? "You"}</div>
                 <div className="text-[11px] text-faint">{micMode === "off" ? "mic off" : micActive ? "listening" : micMode === "ptt" ? "hold space" : "mic on"}</div>
               </div>
@@ -541,10 +549,10 @@ export function CallRoom({ callId }: { callId: string }) {
           <div className="mt-16 flex min-h-[96px] w-full max-w-3xl flex-col items-center px-4 text-center" aria-live="polite">
             {captions && captionText && (
               <>
-                <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: interim && phase === "idle" ? me?.color : activeSpeaker?.color }}>
+                <div className="mb-1.5 text-[13px] font-medium" style={{ color: interim && phase === "idle" ? me?.color : activeSpeaker?.color }}>
                   {captionWho}
                 </div>
-                <p className="font-serif text-[22px] leading-snug text-muted [text-wrap:balance]">{captionText.length > 260 ? "…" + captionText.slice(-260) : captionText}</p>
+                <p className="text-[22px] font-normal leading-snug tracking-[-0.01em] text-muted [text-wrap:balance]">{captionText.length > 260 ? "…" + captionText.slice(-260) : captionText}</p>
               </>
             )}
             {captions && !captionText && phase === "thinking" && activeSpeaker && <p className="text-[13px] text-faint">{activeSpeaker.name} is thinking…</p>}
@@ -557,7 +565,7 @@ export function CallRoom({ callId }: { callId: string }) {
                 ))}
               </div>
             )}
-            {notice && <p className="mt-3 rounded-md  px-3 py-1.5 text-[12px] text-danger">{notice}</p>}
+            {notice && <p className="mt-4 inline-flex items-center gap-1.5 rounded-full border-[0.5px] border-line-strong bg-panel px-3 py-1 text-[12px] text-faint">{notice}</p>}
           </div>
 
           {/* Toasts */}
