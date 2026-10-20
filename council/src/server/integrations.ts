@@ -77,3 +77,13 @@ export async function runIntegrationAction(appId: string, action: string, input:
       return `Action ${action} is not implemented for ${appId}.`;
   }
 }
+
+/** Actions an agent can run against a connected app. Simulated apps expose a generic pair. */
+export function listActions(appId: string): IntegrationActionSpec[] {
+  const live = LIVE_ACTIONS.filter((a) => a.appId === appId);
+  if (live.length) return live;
+  return [
+    { appId, action: "search", description: `Search ${appId} (simulated)`, input: { query: "Search text" }, write: false },
+    { appId, action: "create", description: `Create a record in ${appId} (simulated)`, input: { title: "Title", body: "Details" }, write: true },
+  ];
+}

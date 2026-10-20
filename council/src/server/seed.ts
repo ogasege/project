@@ -251,6 +251,10 @@ Build a contact list, email at volume, book calls, try to get something signed.
 
   db.activity = {
     act_seed: { id: "act_seed", actorId: "u_erioluwa", verb: "created the workspace", createdAt: now - 3600_000 },
+    act_1: { id: "act_1", actorId: "a_atlas", verb: "drafted the beats for", itemId: "pg_screenplay", createdAt: now - 40 * 60_000 },
+    act_2: { id: "act_2", actorId: "a_vera", verb: "challenged the claim in", itemId: "pg_why_council", detail: "“Disagreement surfaces wrong vectors early” needs evidence before it goes on the YC form.", createdAt: now - 25 * 60_000 },
+    act_3: { id: "act_3", actorId: "a_scout", verb: "started researching", itemId: "is_gtm_7", detail: "Pulling mid-tier gold producers in Ghana from public filings.", createdAt: now - 12 * 60_000 },
+    act_4: { id: "act_4", actorId: "u_cofounder", verb: "moved to In Progress", itemId: "is_eng_1", createdAt: now - 6 * 60_000 },
   };
 
   db.integrations = {

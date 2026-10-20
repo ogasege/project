@@ -219,7 +219,7 @@ export function Menu<T>({
                 if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(filtered.length - 1, a + 1)); }
                 else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(0, a - 1)); }
                 else if (e.key === "Enter" && filtered[active]) { e.preventDefault(); choose(filtered[active]); }
-                else if (e.key === "Escape") setOpen(false);
+                else if (e.key === "Escape") { e.stopPropagation(); setOpen(false); }
               }}
               placeholder={placeholder}
               className="w-full border-b border-line bg-transparent px-3 py-2 text-[13px] outline-none placeholder:text-faint"
@@ -253,7 +253,8 @@ export function Menu<T>({
 export function Modal({ open, onClose, children, className, label }: { open: boolean; onClose: () => void; children: React.ReactNode; className?: string; label: string }) {
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    // Escape inside an open Menu closes the menu only, not the modal behind it.
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && !document.querySelector("[data-menu-panel]") && onClose();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
