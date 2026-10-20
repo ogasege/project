@@ -47,6 +47,25 @@ slideware, demonstrable in a founder video.
 
 ---
 
+## 0.5 Step zero: reverse-engineer the originals with REA
+
+Before designing anything, use [REA — Reverse Engineer Anything](https://github.com/morluto/rea)
+(`npx rea-agents@latest`) to recover how Linear and Notion actually work from what they ship, and
+ground every design decision in that evidence rather than in screenshots or memory:
+
+1. Collect the shipped artifacts: the desktop Electron apps (ASAR) and web bundles when reachable,
+   and always the JavaScript both companies publish (`@linear/sdk`, `@notionhq/client`, plus
+   `notion-client`/`notion-types` for Notion's private `api/v3` model).
+2. Run `analyze-javascript-application` on each target. Keep the Evidence ids and artifact digests.
+3. Extract: the entity models and their enums (issue relations, project status and health,
+   workflow states, view types), the block and property model, the private-API record loading
+   pattern, the integration service list, and anything describing how agents work inside the
+   product.
+4. Write the findings, with evidence ids, to `docs/REVERSE_ENGINEERING.md`, and state which
+   findings shaped the build and which are roadmap.
+5. Treat REA output as derived evidence about shipped code: report its unknowns and limits, and
+   don't claim runtime behaviour it didn't observe.
+
 ## 1. Product in one sentence
 
 **Council is Linear and Notion merged into one multiplayer workspace where AI models are teammates

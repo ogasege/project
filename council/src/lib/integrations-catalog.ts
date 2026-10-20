@@ -57,6 +57,8 @@ export const CATALOG: CatalogApp[] = [
   app("sentry", "Sentry", "Engineering", B, "oauth", ["intake", "sync", "unfurl", "embed"], "#362d59", "Se", "Create issues from Sentry errors and keep them in sync when resolved."),
   app("vercel", "Vercel", "Engineering", L, "oauth", ["sync", "notify"], "#000000", "▲", "Link preview deployments to issues and pull requests."),
   app("netlify", "Netlify", "Engineering", L, "oauth", ["notify"], "#00c7b7", "Nf", "See deploy previews and status on linked issues."),
+  app("launchdarkly", "LaunchDarkly", "Engineering", L, "oauth", ["sync", "unfurl"], "#405bff", "LD", "Link feature flags to issues and see rollout status where the work is tracked."),
+  app("email-intake", "Email intake", "Support", L, "none", ["intake"], "#64748b", "@", "Forward emails to a team address to create issues automatically."),
   app("datadog", "Datadog", "Engineering", L, "oauth", ["intake", "notify"], "#632ca6", "Dd", "Open issues from monitors and incidents."),
   app("pagerduty", "PagerDuty", "Engineering", L, "oauth", ["intake", "notify"], "#06ac38", "PD", "Create and link issues from PagerDuty incidents."),
   app("opsgenie", "Opsgenie", "Engineering", L, "oauth", ["intake", "notify"], "#2684ff", "Og", "Turn alerts into tracked follow-up issues."),
@@ -94,7 +96,7 @@ export const CATALOG: CatalogApp[] = [
   // Files & docs
   app("google-drive", "Google Drive", "Files & docs", B, "oauth", ["embed", "unfurl", "ai-search"], "#1fa463", "Dr", "Embed and preview Docs, Sheets and Slides; search Drive from AI."),
   app("google-sheets", "Google Sheets", "Files & docs", B, "oauth", ["sync", "embed"], "#0f9d58", "Sh", "Export issue data to live spreadsheets; embed sheets in pages."),
-  app("google-calendar", "Google Calendar", "Productivity", N, "oauth", ["sync", "embed"], "#4285f4", "Ca", "See meetings next to your docs and attach notes to events."),
+  app("google-calendar", "Google Calendar", "Productivity", B, "oauth", ["sync", "embed"], "#4285f4", "Ca", "See meetings next to your docs and attach notes to events."),
   app("onedrive", "OneDrive", "Files & docs", N, "oauth", ["embed", "ai-search"], "#0364b8", "1D", "Embed files and search OneDrive from AI."),
   app("sharepoint", "SharePoint", "Files & docs", N, "oauth", ["embed", "ai-search"], "#038387", "SP", "Search SharePoint sites and documents from AI."),
   app("dropbox", "Dropbox", "Files & docs", N, "oauth", ["embed"], "#0061ff", "Db", "Embed Dropbox files and folders."),

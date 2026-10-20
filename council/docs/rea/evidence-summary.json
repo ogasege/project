@@ -1,0 +1,47 @@
+[
+  {
+    "package": "@linear/sdk@98.0.0",
+    "evidence_id": "ev_79dc442352ed79a6a0be155ddfdc3c2d44178f8d4188cb9c506f3017edff67bc",
+    "root_artifact_sha256": "9337ccdca7786a3af1336aedea93933e4b95921c0c09f62f7cfa3b14ce9b9466",
+    "graph_id": "jag_4eea4af50eeaf271c089eed129ed582ee7a32dca6f1ff72188a33ae3b6194775",
+    "semantic_graph_id": "jsrg_d53c5e44500a1bf119c0de132e1ec6b1ab679da28258ae10ad32597c5fd21a51",
+    "authority": "shipped-artifact",
+    "confidence": "derived",
+    "parsed_javascript_files": 7,
+    "visited_ast_nodes": 751812,
+    "findings": 11372,
+    "semantic_nodes": 60884,
+    "semantic_relations": 16215,
+    "unknowns": 24116
+  },
+  {
+    "package": "@notionhq/client@5.27.1",
+    "evidence_id": "ev_42350772323037984388ed4743430b45e553e67fe7bf4c2f91d3c14eb28c9381",
+    "root_artifact_sha256": "d68b4bc7131f2396095296a0abae05abf9e2f9e294a21f80af24f870797522b1",
+    "graph_id": "jag_6f5d1b874c914f87d1c269f6eb62ecb1d7cadba72d36edef04ff4911b808d45b",
+    "semantic_graph_id": "jsrg_b223b581bd9c46093306cb318a875e50903457918c0363b38d26556be4705556",
+    "authority": "shipped-artifact",
+    "confidence": "derived",
+    "parsed_javascript_files": 60,
+    "visited_ast_nodes": 66707,
+    "findings": 1496,
+    "semantic_nodes": 20947,
+    "semantic_relations": 8041,
+    "unknowns": 2700
+  },
+  {
+    "package": "notion-client@8.0.8",
+    "evidence_id": "ev_68b6a304718dc05d977ebad78d8b85e32242c9fd232de96d2d5d651407d04791",
+    "root_artifact_sha256": "ca145288dc223e2611057e7d4207685e0f464a9ed63f34b1b9c2cefc2711efe3",
+    "graph_id": "jag_98530dea659386ef42296c87ce01d9facae67a108f9892cf228e9899b3c82542",
+    "semantic_graph_id": "jsrg_948fc152709ef2f8fa7ba073ed9be394cd34b2beb821df6ad0bb28a6be4de6b1",
+    "authority": "shipped-artifact",
+    "confidence": "derived",
+    "parsed_javascript_files": 2,
+    "visited_ast_nodes": 3221,
+    "findings": 35,
+    "semantic_nodes": 1653,
+    "semantic_relations": 1232,
+    "unknowns": 525
+  }
+]
