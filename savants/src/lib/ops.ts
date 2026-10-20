@@ -44,5 +44,6 @@ export function emptyDB(): DB {
     integrations: {},
     calls: {},
     proposals: {},
+    outcomes: {},
   };
 }

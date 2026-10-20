@@ -25,7 +25,9 @@ const g = globalThis as unknown as { __savantsStore?: StoreState };
 function load(): DB {
   try {
     const raw = fs.readFileSync(DB_FILE, "utf8");
-    return JSON.parse(raw) as DB;
+    const db = JSON.parse(raw) as DB;
+    db.outcomes ??= {}; // stores saved before outcomes existed
+    return db;
   } catch {
     const db = seedDB();
     persistNow(db);
@@ -48,7 +50,9 @@ function store(): StoreState {
 }
 
 export function getDB(): DB {
-  return store().db;
+  const s = store();
+  if (!s.db.outcomes) s.db = { ...s.db, outcomes: {} }; // a store loaded before outcomes existed
+  return s.db;
 }
 
 export function commit(ops: Op[], actorId: string, meta: { opId?: string; clientId?: string } = {}): OpEnvelope {

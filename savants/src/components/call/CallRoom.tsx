@@ -524,7 +524,7 @@ export function CallRoom({ callId }: { callId: string }) {
                     className="flex items-center justify-center rounded-full focus-visible:outline-offset-4"
                     style={{ width: slot, height: slot }}
                   >
-                    <Orb color={p.color} state={state} getLevel={getAgentLevel(p.id)} size={orbSize} dim={!!live?.speakerId && !isSpeaker} />
+                    <Orb look={p.agent?.presence} color={p.color} state={state} getLevel={getAgentLevel(p.id)} size={orbSize} dim={!!live?.speakerId && !isSpeaker} />
                   </button>
                   <div className="text-center">
                     <div className={clsx("text-[13px] font-medium transition-colors", isSpeaker ? "text-fg" : "text-muted")}>{p.name}</div>

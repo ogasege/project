@@ -1,6 +1,8 @@
 // Unified data model. Pages (Notion) and issues (Linear) are both `Item`s:
 // a title, a block tree, and typed properties. `kind` decides which UI renders it.
 
+import type { PresenceLook } from "./presence";
+
 export type ID = string;
 
 export type MemberKind = "human" | "agent";
@@ -14,6 +16,7 @@ export interface AgentConfig {
   autonomy: Autonomy;
   tools: string[]; // allowed tool names
   lead?: boolean;
+  presence?: PresenceLook; // how this savant looks while it works and talks
   stats: { proposed: number; approved: number; rejected: number };
 }
 
@@ -221,6 +224,45 @@ export interface Proposal {
   resultItemId?: ID;
 }
 
+// An outcome is what the user wants to be true by a date ("grow revenue 20% by 31 December").
+// The savants on it split it into workstreams; each workstream is an issue one savant owns.
+export type WorkstreamStatus = "queued" | "working" | "needs-you" | "done" | "failed";
+
+export interface Workstream {
+  id: ID;
+  agentId: ID;
+  title: string;
+  why: string;
+  itemId?: ID; // the issue that tracks it
+  status: WorkstreamStatus;
+  phase?: "thinking" | "writing"; // while working
+  activity?: string; // the latest thing it said or did, for the live view
+  log: { at: number; text: string }[];
+  round: number;
+}
+
+export type OutcomeStatus = "planning" | "working" | "needs-you" | "review" | "achieved" | "paused";
+
+export interface Outcome {
+  id: ID;
+  title: string;
+  deadline?: string | null; // yyyy-mm-dd
+  guardrails?: string;
+  measure?: string; // how we know it worked
+  status: OutcomeStatus;
+  repIds: ID[]; // savants on it
+  leadId: ID;
+  strategy?: string; // the lead's one-paragraph plan
+  plannedBy: "model" | "simulator";
+  view?: string; // which team view the room shows (orbit, constellation, ...)
+  projectId?: ID;
+  workstreams: Workstream[];
+  rounds: number;
+  createdBy: ID;
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface Settings {
   workspaceName: string;
   currentUserId: ID;
@@ -242,6 +284,7 @@ export interface DB {
   integrations: Record<ID, IntegrationConnection>;
   calls: Record<ID, Call>;
   proposals: Record<ID, Proposal>;
+  outcomes: Record<ID, Outcome>;
 }
 
 export type Collection = Exclude<keyof DB, "version" | "settings">;

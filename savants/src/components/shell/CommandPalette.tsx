@@ -17,6 +17,7 @@ import {
   Search,
   Settings,
   SquarePen,
+  Target,
   UserCheck,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -131,6 +132,7 @@ export function CommandPalette() {
         run: () => void useStore.getState().dispatch([{ type: "settings", patch: { theme: db.settings.theme === "dark" ? "light" : "dark" } }]),
       },
       { id: "shortcuts", group: "Actions", label: "Show keyboard shortcuts", hint: "?", icon: <Keyboard size={14} />, run: () => setUI({ shortcutsOpen: true }) },
+      { id: "nav-outcomes", group: "Navigation", label: "Go to Outcomes", hint: "G O", icon: <Target size={14} />, run: go("/") },
       { id: "nav-inbox", group: "Navigation", label: "Go to Inbox", hint: "G I", icon: <Inbox size={14} />, run: go("/inbox") },
       { id: "nav-my", group: "Navigation", label: "Go to My issues", hint: "G M", icon: <CircleDot size={14} />, run: go("/my-issues") },
       { id: "nav-approvals", group: "Navigation", label: "Go to Approvals", icon: <CheckCheck size={14} />, run: go("/approvals") },

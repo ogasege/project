@@ -7,7 +7,7 @@ import { Kbd, Modal } from "@/components/ui";
 import { createPage } from "@/components/pages/actions";
 import { isTypingTarget } from "@/components/issues/helpers";
 
-const GO: Record<string, string> = { i: "/inbox", m: "/my-issues", p: "/projects", a: "/agents", c: "/call", s: "/settings" };
+const GO: Record<string, string> = { o: "/", i: "/inbox", m: "/my-issues", p: "/projects", a: "/agents", c: "/call", s: "/settings" };
 
 export const SHORTCUTS: { group: string; items: { keys: string[]; label: string }[] }[] = [
   {

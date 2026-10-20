@@ -19,6 +19,7 @@ import {
   Settings,
   SquarePen,
   Sun,
+  Target,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { agents as listAgents, currentUser } from "@/lib/workspace";
@@ -80,6 +81,7 @@ export function Sidebar() {
   const savants = useMemo(() => listAgents(db), [db]);
   const pending = useMemo(() => Object.values(db.proposals).filter((p) => p.status === "pending").length, [db.proposals]);
   const unread = useMemo(() => Object.values(db.activity).filter((a) => a.actorId !== db.settings.currentUserId && !(a.readBy ?? []).includes(db.settings.currentUserId)).length, [db.activity, db.settings.currentUserId]);
+  const needsYou = useMemo(() => Object.values(db.outcomes ?? {}).filter((o) => o.status === "needs-you").length, [db.outcomes]);
   const liveCalls = useMemo(() => Object.values(db.calls).filter((c) => c.status === "live").length, [db.calls]);
   const dark = db.settings.theme === "dark";
 
@@ -103,6 +105,7 @@ export function Sidebar() {
 
       <nav className="flex-1 overflow-y-auto px-2 pb-4">
         <div className="space-y-px">
+          <NavLink href="/" icon={<Target size={15} />} label="Outcomes" badge={needsYou} exact />
           <NavLink href="/inbox" icon={<Inbox size={15} />} label="Inbox" badge={unread} />
           <NavLink href="/my-issues" icon={<CircleDot size={15} />} label="My issues" />
           <NavLink href="/approvals" icon={<CheckCheck size={15} />} label="Approvals" badge={pending} />

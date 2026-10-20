@@ -11,6 +11,10 @@ import { Avatar, Button, clsx, EmptyState, PageHeader, StatusIcon } from "@/comp
 import { TrackRecord } from "@/components/agents/AgentCard";
 import { AGENT_COLORS, AUTONOMY, GLYPHS, MODELS, TOOLS } from "@/components/agents/constants";
 import { ProposalCard } from "@/components/approvals/ProposalCard";
+import { Presence } from "@/components/presence/Presence";
+import { LookPicker } from "@/components/outcomes/LookPicker";
+import { LOOK_BY_ID } from "@/lib/presence";
+import { STANDING_LOOKS } from "@/lib/reps";
 
 export default function AgentProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +24,7 @@ export default function AgentProfilePage() {
   const agent = db.members[id];
   const [persona, setPersona] = useState(agent?.agent?.persona ?? "");
   const [customModel, setCustomModel] = useState("");
+  const [pickingLook, setPickingLook] = useState(false);
 
   useEffect(() => {
     setPersona(agent?.agent?.persona ?? "");
@@ -98,6 +103,21 @@ export default function AgentProfilePage() {
                 rows={6}
                 className="w-full rounded-lg border border-line bg-panel p-3 leading-relaxed outline-none focus:border-accent"
               />
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-[13px] font-medium">Look</h2>
+              <div className="flex items-center gap-3 rounded-lg border border-line bg-panel p-3">
+                <span data-theme="dark" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-[#0b0c0e]">
+                  <Presence look={cfg.presence ?? STANDING_LOOKS[id] ?? "signal"} color={agent.color} state="speaking" size={40} seedKey={id} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium">{LOOK_BY_ID[cfg.presence ?? STANDING_LOOKS[id] ?? "signal"]?.name}</div>
+                  <div className="text-xs text-faint">How {agent.name} appears on calls and while working on outcomes.</div>
+                </div>
+                <Button onClick={() => setPickingLook(true)}>Change</Button>
+              </div>
+              {pickingLook && <LookPicker name={agent.name} color={agent.color} value={cfg.presence ?? STANDING_LOOKS[id] ?? "signal"} onChange={(l) => patchAgent({ presence: l })} onClose={() => setPickingLook(false)} />}
             </section>
 
             <section className="space-y-2">
