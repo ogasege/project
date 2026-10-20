@@ -34,7 +34,7 @@ components and the open Inter typeface. The Emeka design system will be tuned on
 |---|---|---|
 | Node.js 22 or newer | `node -v` | `brew install node` (Mac) or [nodejs.org](https://nodejs.org) |
 | Git | `git --version` | `xcode-select --install` (Mac) |
-| Access to the private EmekaAITeam GitHub org | open [the repo](https://github.com/EmekaAITeam/savants) in your browser | ask an org owner; then sign in once with `gh auth login` (`brew install gh`) or use an SSH key |
+| Access to the private EmekaAITeam GitHub org | open [the repo](https://github.com/EmekaAITeam/linear) in your browser | ask an org owner; then sign in once with `gh auth login` (`brew install gh`) or use an SSH key |
 | Chrome or Edge | | for talking to the savants out loud; typing works anywhere |
 | An Anthropic API key (optional) | | [console.anthropic.com](https://console.anthropic.com) → API keys. Without one the savants run on a built-in simulator. |
 
@@ -44,8 +44,8 @@ Paste these one line at a time (they avoid characters some terminals escape when
 
 ```bash
 cd ~
-git clone https://github.com/EmekaAITeam/savants.git
-cd savants
+git clone https://github.com/EmekaAITeam/linear.git
+cd linear
 npm run local -- --workspace wrkspc_YOUR_WORKSPACE_ID
 ```
 
@@ -63,7 +63,7 @@ out makes the script ask for it instead).
 ### 3. Every day after
 
 ```bash
-cd ~/savants
+cd ~/linear
 git pull
 npm run local
 ```
