@@ -8,6 +8,22 @@
 # ANTHROPIC_API_KEY / ANTHROPIC_WORKSPACE_ID in the environment work too. Anything not given and
 # not already saved is asked for (Enter on the key uses the built-in simulator).
 set -euo pipefail
+
+# This copy is retired. The app lives at github.com/EmekaAITeam/linear.
+cat >&2 <<'MSG'
+
+  This is the OLD copy of Savants, and it no longer runs.
+  The app moved to github.com/EmekaAITeam/linear. Run these, one line at a time:
+
+    cd ~
+    git clone https://github.com/EmekaAITeam/linear.git
+    cd linear
+    npm run local
+
+  (If you already cloned it: cd ~/linear, then git pull, then npm run local.)
+
+MSG
+exit 1
 cd "$(dirname "$0")/.."
 
 arg_key="${ANTHROPIC_API_KEY:-}"

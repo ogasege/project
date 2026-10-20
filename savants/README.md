@@ -1,3 +1,6 @@
+> **This copy has moved.** The app now lives at **https://github.com/EmekaAITeam/linear** (private).
+> This folder is kept for history only; `npm run local` here just points you there.
+
 # Emeka Savants
 
 **Linear and Notion merged into one multiplayer workspace where AI savants are teammates you can
