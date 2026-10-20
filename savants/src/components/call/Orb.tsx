@@ -5,10 +5,10 @@ import { useEffect, useRef } from "react";
 export type OrbState = "idle" | "listening" | "thinking" | "speaking";
 
 /**
- * A participant drawn as a radial signal meter (Emeka: 1px rules, no glow, no gradients).
- * Ticks around the ring extend with `getLevel()` while the participant speaks or listens.
- * Thinking is the system's indeterminate-progress mark: a 1.5s accent sweep along the ring.
- * Motion reports state only; idle is still.
+ * A participant drawn as a radial signal meter: 96 ticks around a 1px ring, no glow.
+ * Ticks extend with `getLevel()` while the participant speaks or listens.
+ * Thinking is a 1.5s accent arc circling the ring. Motion reports state only; idle is still.
+ * Matches the "Signal meter" study in the presence gallery, the one chosen for the call room.
  */
 export function Orb({ color, state, getLevel, size = 160, dim = false }: { color: string; state: OrbState; getLevel: () => number; size?: number; dim?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -51,8 +51,8 @@ export function Orb({ color, state, getLevel, size = 160, dim = false }: { color
       for (let i = 0; i < TICKS; i++) {
         const a = (i / TICKS) * Math.PI * 2 - Math.PI / 2;
         const wave = reduce ? 0.5 : 0.5 + 0.5 * Math.sin(t * 9 + phase[i]) * Math.sin(t * 3.1 + i * 0.4);
-        const len = 4 + (active ? smooth * size * 0.32 * (0.35 + wave * 0.65) : 0);
-        ctx.strokeStyle = active && smooth > 0.04 ? color : "#2A2F33";
+        const len = 4 + (active ? smooth * R * 0.85 * (0.35 + wave * 0.65) : 0);
+        ctx.strokeStyle = active && smooth > 0.04 ? color : "#2a2d33";
         ctx.beginPath();
         ctx.moveTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
         ctx.lineTo(cx + Math.cos(a) * (R + len), cy + Math.sin(a) * (R + len));
@@ -60,23 +60,20 @@ export function Orb({ color, state, getLevel, size = 160, dim = false }: { color
       }
 
       // Inner disc: panel fill, one 1px rule in the participant's colour.
-      ctx.fillStyle = "#0E1114";
+      ctx.fillStyle = "#121317";
       ctx.strokeStyle = color;
       ctx.beginPath();
       ctx.arc(cx, cy, R - 6, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      // Thinking: accent sweep along a 1px track, 1.5s per revolution.
+      // Thinking: an accent arc circling just outside the ticks, 1.5s per revolution.
       if (st === "thinking") {
-        const a0 = reduce ? 0 : ((t % 1.5) / 1.5) * Math.PI * 2 - Math.PI / 2;
-        ctx.strokeStyle = "#1E2226";
+        const a0 = reduce ? -Math.PI / 2 : ((t % 1.5) / 1.5) * Math.PI * 2 - Math.PI / 2;
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = "#8b93ff";
         ctx.beginPath();
-        ctx.arc(cx, cy, R + 10, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.strokeStyle = "#19D1FF";
-        ctx.beginPath();
-        ctx.arc(cx, cy, R + 10, a0, a0 + Math.PI * 0.5);
+        ctx.arc(cx, cy, R + 12, a0, a0 + 1.4);
         ctx.stroke();
       }
       raf = requestAnimationFrame(draw);
