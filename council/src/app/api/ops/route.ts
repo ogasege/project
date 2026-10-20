@@ -26,6 +26,10 @@ export async function POST(req: Request) {
   if (parsed.data.ops.some((o) => "coll" in o && o.coll === "proposals" && o.type !== "delete")) {
     return Response.json({ error: "Use /api/proposals to change proposals" }, { status: 403 });
   }
+  // Integration credentials are written only through /api/integrations (server-side, never echoed).
+  if (parsed.data.ops.some((o) => "coll" in o && o.coll === "integrations")) {
+    return Response.json({ error: "Use /api/integrations to change connections" }, { status: 403 });
+  }
   const actorId = getDB().settings.currentUserId;
   const env = commit(parsed.data.ops as Op[], actorId, { opId: parsed.data.opId, clientId: parsed.data.clientId });
   return Response.json({ ok: true, opId: env.opId });

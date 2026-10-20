@@ -1,4 +1,5 @@
 import { subscribe } from "@/server/db";
+import { redactEnvelope } from "@/server/redact";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export function GET(req: Request) {
         }
       };
       send(`retry: 2000\n\n`);
-      const unsub = subscribe((env) => send(`data: ${JSON.stringify(env)}\n\n`));
+      const unsub = subscribe((env) => send(`data: ${JSON.stringify(redactEnvelope(env))}\n\n`));
       const ping = setInterval(() => send(`: ping\n\n`), 20_000);
       cleanup = () => {
         clearInterval(ping);
