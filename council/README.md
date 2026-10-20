@@ -5,6 +5,9 @@ assign work to and get on a live voice call with to reason through problems toge
 
 > Built from [`PROMPT.md`](./PROMPT.md), which is the full product brief derived from the Oct 19
 > "Antler retrospective & new direction" meeting. Read it first: it explains *why* every piece exists.
+> The data model, agent protocol and integration catalog are grounded in
+> [a reverse-engineering pass over what Linear and Notion ship](./docs/REVERSE_ENGINEERING.md),
+> done with [REA](https://github.com/morluto/rea).
 
 ## What's inside
 
