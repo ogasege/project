@@ -1,23 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Check, Search } from "lucide-react";
-import { applyOps } from "@/lib/ops";
+import Link from "next/link";
+import { useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useStore } from "@/lib/store";
 import type { IntegrationConnection } from "@/lib/types";
-import { CAPABILITY_LABEL, CATALOG, CATEGORIES, type CatalogApp } from "@/lib/integrations-catalog";
+import { CATALOG, CATEGORIES, type CatalogApp } from "@/lib/integrations-catalog";
 import { clsx, PageHeader } from "@/components/ui";
-import { ConnectModal } from "./ConnectModal";
-import { AppTile, SourceBadges } from "./AppTile";
+import { AppTile, sourceNote } from "./AppTile";
 
-type SourceFilter = "all" | "linear" | "notion" | "both";
+// Laid out like Linear's integrations settings (structure recovered with REA from the web app):
+// one centred column, a title and one-line pitch, search, a strip of what is already on,
+// a short list of essentials, then every category with a "View all".
+
+type SourceFilter = "all" | "linear" | "notion";
+
+const ESSENTIALS = ["savants-mcp", "github", "slack", "claude", "figma", "google-drive", "sentry", "zendesk"];
+const CATEGORY_ORDER = ["Agents & AI", "Engineering", "Communication", "Customer", "Project management", "Files & docs", "Design", "Product", "Data & analytics", "Automation", "Productivity", "Forms", "Support", "Identity", "Embeds"];
+const ORDERED_CATEGORIES = [...CATEGORY_ORDER.filter((c) => CATEGORIES.includes(c)), ...CATEGORIES.filter((c) => !CATEGORY_ORDER.includes(c))];
+const PREVIEW = 4;
 
 export function IntegrationsView() {
   const db = useStore((s) => s.db);
   const [q, setQ] = useState("");
-  const [category, setCategory] = useState<string>("All");
+  const [category, setCategory] = useState<string | null>(null);
   const [source, setSource] = useState<SourceFilter>("all");
-  const [open, setOpen] = useState<CatalogApp | null>(null);
 
   const connections = useMemo(() => {
     const m = new Map<string, IntegrationConnection>();
@@ -25,151 +32,192 @@ export function IntegrationsView() {
     return m;
   }, [db.integrations]);
 
-  const filtered = useMemo(() => {
+  const visible = useMemo(() => {
     const query = q.trim().toLowerCase();
     return CATALOG.filter((a) => {
-      if (category !== "All" && a.category !== category) return false;
-      const l = a.sources.includes("linear");
-      const n = a.sources.includes("notion");
-      if (source === "linear" && !l) return false;
-      if (source === "notion" && !n) return false;
-      if (source === "both" && !(l && n)) return false;
-      if (query && !`${a.name} ${a.description} ${a.category} ${a.capabilities.join(" ")}`.toLowerCase().includes(query)) return false;
+      if (source !== "all" && !a.sources.includes(source)) return false;
+      if (query && !`${a.name} ${a.description} ${a.category}`.toLowerCase().includes(query)) return false;
       return true;
     });
-  }, [q, category, source]);
+  }, [q, source]);
 
-  const connected = filtered.filter((a) => connections.has(a.id));
-  const available = filtered.filter((a) => !connections.has(a.id));
-  const counts = useMemo(
-    () => ({
-      linear: CATALOG.filter((a) => a.sources.includes("linear")).length,
-      notion: CATALOG.filter((a) => a.sources.includes("notion")).length,
-      both: CATALOG.filter((a) => a.sources.includes("linear") && a.sources.includes("notion")).length,
-    }),
-    [],
-  );
-
-  const applyConnection = (conn: IntegrationConnection | null, appId: string) => {
-    useStore.setState((s) => ({
-      db: applyOps(s.db, conn ? [{ type: "insert", coll: "integrations", doc: conn as unknown as IntegrationConnection & Record<string, unknown> }] : Object.values(s.db.integrations).filter((c) => c.appId === appId).map((c) => ({ type: "delete" as const, coll: "integrations" as const, id: c.id }))),
-    }));
-  };
+  const connected = CATALOG.filter((a) => connections.has(a.id));
+  const searching = q.trim().length > 0;
+  const browsing = !searching && !category;
 
   return (
     <>
       <PageHeader title="Integrations">
         <span className="text-[12px] text-faint">
-          {CATALOG.length} apps · {connections.size} connected
+          {connections.size} of {CATALOG.length} on
         </span>
       </PageHeader>
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-6xl px-6 py-6">
-          <div className="mb-5">
-            <h2 className="text-[20px] font-semibold tracking-tight">Everything Linear and Notion connect to, in one place</h2>
-            <p className="mt-1 max-w-3xl text-muted">
-              The catalog is the union of both products&apos; public integration directories ({counts.linear} listed by Linear, {counts.notion} by Notion, {counts.both} by both), plus
-              Savants&apos;s own MCP server so any agent tool can plug in. GitHub, Slack, Webhooks and MCP are live; every other app connects in{" "}
-              <span className="text-fg">simulated mode</span> so agents can exercise the integration end to end until its real connector ships.
-            </p>
-          </div>
+        <div className="mx-auto w-full max-w-[800px] px-6 pb-16 pt-10">
+          <h2 className="text-[24px] font-semibold tracking-[-0.01em] text-fg">Integrations</h2>
+          <p className="mt-1 text-muted">Every tool Linear and Notion connect to, in one place, so you and the savants can work where the work already lives.</p>
 
-          <div className="sticky top-0 z-10 -mx-6 mb-4 flex flex-wrap items-center gap-2 border-b border-line bg-bg px-6 py-3">
-            <label className="flex h-8 w-64 items-center gap-2 rounded-md border border-line bg-panel px-2 focus-within:border-accent">
-              <Search size={13} className="text-faint" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search integrations" aria-label="Search integrations" className="flex-1 bg-transparent outline-none placeholder:text-faint" />
+          <div className="mt-6 flex flex-wrap items-center gap-2">
+            <label className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-lg border-[0.5px] border-line-strong bg-panel px-2.5 focus-within:border-accent">
+              <Search size={14} className="shrink-0 text-faint" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search integrations…" aria-label="Search integrations" className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-disabled" />
+              {q && (
+                <button onClick={() => setQ("")} aria-label="Clear search" className="text-faint hover:text-fg">
+                  <X size={13} />
+                </button>
+              )}
             </label>
-            <div role="radiogroup" aria-label="Source" className="flex h-8 items-center rounded-md border border-line bg-panel p-0.5">
-              {(["all", "linear", "notion", "both"] as SourceFilter[]).map((s) => (
+            <div role="radiogroup" aria-label="Listed by" className="flex h-8 items-center gap-0.5 rounded-lg border-[0.5px] border-line-strong bg-panel p-0.5">
+              {(["all", "linear", "notion"] as SourceFilter[]).map((s) => (
                 <button
                   key={s}
                   role="radio"
                   aria-checked={source === s}
                   onClick={() => setSource(s)}
-                  className={clsx("h-full rounded px-2.5 text-[12px] capitalize", source === s ? "bg-active text-fg" : "text-muted hover:text-fg")}
+                  className={clsx("h-full rounded-md px-2.5 text-[12px] font-medium transition-colors", source === s ? "bg-active text-fg" : "text-faint hover:text-muted")}
                 >
-                  {s === "all" ? "All" : s === "both" ? "Both" : s === "linear" ? "Linear" : "Notion"}
-                </button>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {["All", ...CATEGORIES].map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setCategory(c)}
-                  aria-pressed={category === c}
-                  className={clsx("h-7 rounded border px-2.5 text-[12px]", category === c ? "border-accent bg-accent-soft text-fg" : "border-line text-muted hover:text-fg")}
-                >
-                  {c}
+                  {s === "all" ? "All" : s === "linear" ? "Linear" : "Notion"}
                 </button>
               ))}
             </div>
           </div>
 
-          {connected.length > 0 && (
-            <section className="mb-8" aria-label="Connected">
-              <h3 className="mb-2 text-[12px] font-medium uppercase tracking-wide text-faint">Connected</h3>
-              <Grid apps={connected} connections={connections} onOpen={setOpen} />
-            </section>
+          {browsing ? (
+            <>
+              {connected.length > 0 && <EnabledStrip apps={connected} connections={connections} />}
+              <Section title="Essentials" note="Where most teams start">
+                <Grid apps={ESSENTIALS.map((id) => visible.find((a) => a.id === id)).filter((a): a is CatalogApp => !!a)} connections={connections} />
+              </Section>
+              {ORDERED_CATEGORIES.map((c) => {
+                const apps = visible.filter((a) => a.category === c);
+                if (!apps.length) return null;
+                return (
+                  <Section
+                    key={c}
+                    title={c}
+                    action={
+                      apps.length > PREVIEW && (
+                        <button onClick={() => setCategory(c)} className="flex items-center gap-0.5 text-[12px] font-medium text-faint hover:text-fg">
+                          View all {apps.length} <ChevronRight size={12} />
+                        </button>
+                      )
+                    }
+                  >
+                    <Grid apps={apps.slice(0, PREVIEW)} connections={connections} />
+                  </Section>
+                );
+              })}
+            </>
+          ) : (
+            <Section
+              title={searching ? `Results for “${q.trim()}”` : category!}
+              action={
+                !searching && (
+                  <button onClick={() => setCategory(null)} className="flex items-center gap-0.5 text-[12px] font-medium text-faint hover:text-fg">
+                    <ChevronLeft size={12} /> All integrations
+                  </button>
+                )
+              }
+            >
+              {(() => {
+                const apps = searching ? visible : visible.filter((a) => a.category === category);
+                return apps.length ? <Grid apps={apps} connections={connections} /> : <p className="py-6 text-faint">Nothing matches. Try a broader search, or ask a savant on a call to connect it for you.</p>;
+              })()}
+            </Section>
           )}
-
-          <section aria-label="Available">
-            <h3 className="mb-2 text-[12px] font-medium uppercase tracking-wide text-faint">{connected.length ? "Available" : "All integrations"}</h3>
-            {available.length ? <Grid apps={available} connections={connections} onOpen={setOpen} /> : <p className="text-faint">No integrations match these filters.</p>}
-          </section>
         </div>
       </div>
-
-      {open && (
-        <ConnectModal
-          app={open}
-          connection={connections.get(open.id)}
-          onClose={() => setOpen(null)}
-          onConnected={(c) => applyConnection(c, open.id)}
-          onDisconnected={() => applyConnection(null, open.id)}
-        />
-      )}
     </>
   );
 }
 
-function Grid({ apps, connections, onOpen }: { apps: CatalogApp[]; connections: Map<string, IntegrationConnection>; onOpen: (a: CatalogApp) => void }) {
+function Section({ title, note, action, children }: { title: string; note?: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-      {apps.map((a) => {
-        const conn = connections.get(a.id);
-        return (
-          <button
-            key={a.id}
-            onClick={() => onOpen(a)}
-            className="group flex flex-col gap-2 rounded-lg border border-line bg-elev p-3 text-left transition-colors hover:border-line-strong hover:bg-panel"
-          >
-            <div className="flex items-start gap-3">
-              <AppTile app={a} />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="truncate font-medium">{a.name}</span>
-                  {a.live && <span className="rounded bg-success/15 px-1 text-[10px] font-medium text-success">LIVE</span>}
-                </div>
-                <SourceBadges sources={a.sources} />
-              </div>
-              {conn && (
-                <span className="flex items-center gap-1 text-[11px] text-success">
-                  <Check size={12} /> {conn.mode === "simulated" ? "Simulated" : "Connected"}
-                </span>
-              )}
+    <section className="mt-10" aria-label={title}>
+      <div className="mb-3 flex items-baseline gap-2">
+        <h3 className="text-[13px] font-medium text-fg">{title}</h3>
+        {note && <span className="text-[12px] text-faint">{note}</span>}
+        <span className="ml-auto">{action}</span>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Status({ app, conn }: { app: CatalogApp; conn?: IntegrationConnection }) {
+  if (conn)
+    return (
+      <span className="flex items-center gap-1.5 text-[12px] text-faint">
+        <span className="h-1.5 w-1.5 rounded-full bg-success" />
+        {conn.mode === "simulated" ? "On · simulated" : "On"}
+      </span>
+    );
+  return <span className="text-[12px] text-faint">{sourceNote(app.sources)}</span>;
+}
+
+function Grid({ apps, connections }: { apps: CatalogApp[]; connections: Map<string, IntegrationConnection> }) {
+  return (
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      {apps.map((a) => (
+        <Link
+          key={a.id}
+          href={`/integrations/${a.id}`}
+          className="group flex items-start gap-3 rounded-lg border-[0.5px] border-line bg-panel p-3 transition-colors duration-100 hover:border-line-strong hover:bg-hover"
+        >
+          <AppTile app={a} />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline gap-2">
+              <span className="truncate text-[13px] font-medium text-fg">{a.name}</span>
+              <Status app={a} conn={connections.get(a.id)} />
             </div>
-            <p className="line-clamp-2 text-[12px] text-muted">{a.description}</p>
-            <div className="flex flex-wrap gap-1">
-              {a.capabilities.slice(0, 4).map((c) => (
-                <span key={c} className="rounded border border-line px-1.5 text-[10px] text-faint">
-                  {CAPABILITY_LABEL[c]}
-                </span>
-              ))}
-            </div>
-          </button>
-        );
-      })}
+            <p className="mt-0.5 line-clamp-2 text-[12px] leading-[1.45] text-faint">{a.description}</p>
+          </div>
+          <ChevronRight size={14} className="mt-2 shrink-0 text-disabled transition-colors group-hover:text-muted" />
+        </Link>
+      ))}
     </div>
+  );
+}
+
+// What is already on, as a scrolling strip with arrows (Linear shows its enabled apps this way).
+function EnabledStrip({ apps, connections }: { apps: CatalogApp[]; connections: Map<string, IntegrationConnection> }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const scroll = (dir: 1 | -1) => ref.current?.scrollBy({ left: dir * 260, behavior: "smooth" });
+  return (
+    <Section
+      title="On in this workspace"
+      note={`${apps.length}`}
+      action={
+        apps.length > 3 && (
+          <span className="flex gap-1">
+            <button onClick={() => scroll(-1)} aria-label="Scroll left" className="flex h-6 w-6 items-center justify-center rounded-md text-faint hover:bg-hover hover:text-fg">
+              <ChevronLeft size={14} />
+            </button>
+            <button onClick={() => scroll(1)} aria-label="Scroll right" className="flex h-6 w-6 items-center justify-center rounded-md text-faint hover:bg-hover hover:text-fg">
+              <ChevronRight size={14} />
+            </button>
+          </span>
+        )
+      }
+    >
+      <div ref={ref} className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+        {apps.map((a) => {
+          const conn = connections.get(a.id);
+          return (
+            <Link
+              key={a.id}
+              href={`/integrations/${a.id}`}
+              className="flex w-[200px] shrink-0 snap-start items-center gap-2.5 rounded-lg border-[0.5px] border-line bg-panel p-2.5 transition-colors hover:border-line-strong hover:bg-hover"
+            >
+              <AppTile app={a} size={28} />
+              <div className="min-w-0">
+                <div className="truncate text-[13px] font-medium text-fg">{a.name}</div>
+                <Status app={a} conn={conn} />
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </Section>
   );
 }
