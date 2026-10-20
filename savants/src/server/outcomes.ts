@@ -129,7 +129,7 @@ async function modelPlan(goal: string, deadline: string | null | undefined, guar
       messages: [
         {
           role: "user",
-          content: `Outcome: ${goal}\nDeadline: ${deadline || "none given"}\nGuardrails: ${guardrails || "none given"}\n\nThe team:\n${roster}\n\nWhat the workspace already has:\n${projects || "- nothing yet"}`,
+          content: `Today is ${new Date().toISOString().slice(0, 10)}. Every date in the plan must be after today.\nOutcome: ${goal}\nDeadline: ${deadline || "none given"}\nGuardrails: ${guardrails || "none given"}\n\nThe team:\n${roster}\n\nWhat the workspace already has:\n${projects || "- nothing yet"}`,
         },
       ],
     });

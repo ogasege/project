@@ -70,7 +70,8 @@ Workspace teams: ${teams}.
 Projects:
 ${projects}`;
 
-  const parts: string[] = [];
+  // Volatile, so it goes after the cached block: the models otherwise guess the date.
+  const parts: string[] = [`Today is ${new Date().toISOString().slice(0, 10)}.`];
   if (opts.call) {
     const ctx = opts.call.contextItemIds.map((id) => db.items[id]).filter(Boolean) as Item[];
     if (ctx.length) parts.push(`Context for this call:\n\n${ctx.map((it) => renderItem(db, it, 2500)).join("\n\n")}`);
