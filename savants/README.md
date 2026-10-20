@@ -28,15 +28,28 @@ the Emeka mark.
 ## Quickstart
 
 ```bash
-cd savants
-npm install
-cp .env.example .env.local   # optional: add ANTHROPIC_API_KEY for real models
-npm run dev                  # http://localhost:3000
+git clone -b claude/peaceful-edison-3aji4m https://github.com/ogasege/project.git
+cd project/savants
+npm run local        # installs, asks for an optional API key, starts, opens http://localhost:3000
 ```
 
-- **No API key?** The savants run on a built-in simulator so you can demo everything offline.
+Or by hand: `npm install`, `cp .env.example .env.local`, `npm run dev`.
+
+- **No API key?** The savants run on a built-in simulator so you can demo everything offline. If a
+  live call fails for an account reason (bad key, no workspace, no model access), that turn falls
+  back to the simulator and the call says so.
+- **Key not scoped to a workspace?** Set `ANTHROPIC_WORKSPACE_ID` (the API asks for the
+  `anthropic-workspace-id` header).
 - **Voice** needs Chrome or Edge (Web Speech API). Everything also works by typing.
 - Data lives in `.data/db.json`; the audit log is `.data/oplog.ndjson`. `npm run reset-data` re-seeds.
+
+### Security
+
+There is no login yet, so the server binds to `127.0.0.1` and `src/proxy.ts` guards every API
+route: the Host header must be local (blocks DNS rebinding; widen with `SAVANTS_ALLOWED_HOSTS`),
+and state-changing requests from other sites are refused (a body-less cross-site POST skips the
+CORS preflight). Integration credentials stay server-side and are redacted from `/api/state` and
+the live-sync stream. Set `SAVANTS_MCP_TOKEN` to require a bearer token on `/api/mcp`.
 
 ### Connect an MCP client
 

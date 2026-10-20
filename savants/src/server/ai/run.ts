@@ -53,8 +53,23 @@ function* toolEvents(name: string, summary: string, events: ToolEvent[]): Genera
 }
 
 export async function* runAgent(opts: RunOptions): AsyncGenerator<AgentEvent> {
-  if (isLive()) yield* runLive(opts);
-  else yield* runSimulated(opts);
+  if (!isLive()) return yield* runSimulated(opts);
+  let produced = false;
+  try {
+    for await (const ev of runLive(opts)) {
+      produced = true;
+      yield ev;
+    }
+  } catch (err) {
+    // A key or account problem (bad key, missing workspace, no access to the model) fails before
+    // the agent says anything. Keep the call usable on the simulator and say why.
+    const config =
+      err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError || err instanceof Anthropic.BadRequestError || err instanceof Anthropic.NotFoundError;
+    if (!config || produced) throw err;
+    console.error(`[savants] live model unavailable, using simulator: ${(err as Error).message}`);
+    yield { type: "error", message: `Live model unavailable (${(err as InstanceType<typeof Anthropic.APIError>).status}); this turn ran on the simulator.` };
+    yield* runSimulated(opts);
+  }
 }
 
 // ---------- simulator ----------

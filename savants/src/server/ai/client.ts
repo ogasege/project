@@ -9,7 +9,11 @@ export function isLive(): boolean {
 }
 
 export function anthropic(): Anthropic {
-  if (!client) client = new Anthropic();
+  if (!client) {
+    // Keys that are not scoped to a workspace must name one on every request.
+    const workspace = process.env.ANTHROPIC_WORKSPACE_ID;
+    client = new Anthropic(workspace ? { defaultHeaders: { "anthropic-workspace-id": workspace } } : {});
+  }
   return client;
 }
 

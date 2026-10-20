@@ -4,11 +4,12 @@
   "private": true,
   "description": "Linear x Notion, unified: a multiplayer workspace where AI models are teammates you can get on a voice call with.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 127.0.0.1",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "reset-data": "rm -rf .data"
+    "reset-data": "rm -rf .data",
+    "local": "./scripts/start-local.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",
