@@ -10,8 +10,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const theme = useStore((s) => s.db.settings.theme);
 
   useEffect(() => {
-    void useStore.getState().hydrate();
+    // Retry with backoff so a restarting server doesn't leave the app stuck on the loader.
+    let cancelled = false;
+    const load = async (attempt: number) => {
+      try {
+        await useStore.getState().hydrate();
+      } catch {
+        if (!cancelled) setTimeout(() => void load(attempt + 1), Math.min(5000, 500 * 2 ** attempt));
+      }
+    };
+    void load(0);
     connectRealtime();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {

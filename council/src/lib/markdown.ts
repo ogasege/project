@@ -3,6 +3,10 @@ import { uid } from "./id";
 
 // Minimal markdown <-> block conversion. Agents write markdown; the editor stores blocks.
 
+function stripInline(text: string): string {
+  return text.replace(/\*\*(.+?)\*\*/g, "$1").replace(/__(.+?)__/g, "$1").replace(/(^|[^*])\*([^*\s][^*]*?)\*/g, "$1$2");
+}
+
 export function markdownToBlocks(md: string): Block[] {
   const lines = md.replace(/\r\n/g, "\n").split("\n");
   const blocks: Block[] = [];
@@ -23,8 +27,9 @@ export function markdownToBlocks(md: string): Block[] {
     const indentSpaces = raw.length - raw.trimStart().length;
     const indent = Math.min(4, Math.floor(indentSpaces / 2));
     const line = raw.trimStart();
+    // Blocks hold plain text, so inline emphasis markers are dropped.
     const push = (type: BlockType, text: string, extra: Partial<Block> = {}) =>
-      blocks.push({ id: uid("b"), type, text, indent: indent || undefined, ...extra });
+      blocks.push({ id: uid("b"), type, text: stripInline(text), indent: indent || undefined, ...extra });
     let m: RegExpMatchArray | null;
     if ((m = line.match(/^(#{1,3})\s+(.*)$/))) push(`h${m[1].length}` as BlockType, m[2]);
     else if ((m = line.match(/^[-*]\s+\[( |x|X)\]\s+(.*)$/))) push("todo", m[2], { checked: m[1].toLowerCase() === "x" });

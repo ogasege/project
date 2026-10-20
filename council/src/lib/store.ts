@@ -33,6 +33,7 @@ export const useStore = create<Store>((set, get) => ({
   ui: { paletteOpen: false, createIssue: null, shortcutsOpen: false },
   async hydrate() {
     const res = await fetch("/api/state", { cache: "no-store" });
+    if (!res.ok) throw new Error(`state ${res.status}`);
     const db = (await res.json()) as DB;
     set({ db, ready: true });
   },
