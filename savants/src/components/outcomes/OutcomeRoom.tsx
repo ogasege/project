@@ -40,9 +40,16 @@ export function OutcomeRoom({ outcome: o }: { outcome: Outcome }) {
   // The lead's own stream drives the lead's state on the stage.
   const leadWs = o.workstreams.find((w) => w.agentId === o.leadId);
   const stageLead: StageMember = { id: o.leadId, name: lead?.name ?? "Lead", color: lead?.color ?? "#8b5cf6", status: "lead", thinking: leadWs?.status === "working" && leadWs.phase !== "writing" };
-  const stageReps: StageMember[] = o.workstreams
-    .filter((w) => w.agentId !== o.leadId)
-    .map((w) => ({ id: w.agentId, name: db.members[w.agentId]?.name ?? "Savant", color: db.members[w.agentId]?.color ?? "#888", status: w.status, thinking: w.status === "working" && w.phase !== "writing" }));
+  // One node per savant, even when it owns several workstreams: busiest status wins.
+  const rank: StageMember["status"][] = ["working", "needs-you", "queued", "failed", "done"];
+  const stageReps: StageMember[] = o.repIds
+    .filter((id) => id !== o.leadId)
+    .map((id) => {
+      const mine = o.workstreams.filter((w) => w.agentId === id);
+      const status = rank.find((s) => mine.some((w) => w.status === s)) ?? "queued";
+      const thinking = mine.some((w) => w.status === "working" && w.phase !== "writing");
+      return { id, name: db.members[id]?.name ?? "Savant", color: db.members[id]?.color ?? "#888", status, thinking };
+    });
   const status = OUTCOME_STATUS[o.status];
   const done = o.workstreams.filter((w) => w.status === "done").length;
   const callHref = `/call?agents=${o.repIds.join(",")}&context=${o.workstreams.map((w) => w.itemId).filter(Boolean).slice(0, 4).join(",")}`;
