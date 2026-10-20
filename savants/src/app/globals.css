@@ -1,0 +1,216 @@
+@import "tailwindcss";
+
+/* Emeka design system tokens (EmekaAITeam/design-system v1.0.0), mapped onto this app's names.
+   Light is canonical: white content wells inside light-grey chrome, figure and ground carried by
+   that pair plus a 1px rule, never by shadow. Dark is the console mirror. */
+
+@font-face { font-family: "Geist"; src: url("/fonts/Geist-Variable.ttf") format("truetype-variations"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("/fonts/Geist-Italic-Variable.ttf") format("truetype-variations"); font-weight: 100 900; font-style: italic; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("/fonts/GeistMono-Variable.ttf") format("truetype-variations"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("/fonts/GeistMono-Italic-Variable.ttf") format("truetype-variations"); font-weight: 100 900; font-style: italic; font-display: swap; }
+
+:root {
+  --bg: #ffffff;          /* content well */
+  --bg-elev: #f4f6f7;     /* chrome: rail, topbars, panel headers */
+  --bg-panel: #eef1f3;
+  --bg-hover: #eef1f3;
+  --bg-active: #e8ebed;
+  --border: #d7dce0;
+  --border-strong: #b7bec3;
+  --fg: #0b0d0e;
+  --fg-muted: #4b5358;
+  --fg-faint: #5e676c;    /* ink-3: the lightest ink allowed for text (AA) */
+  --fg-disabled: #98a0a5;
+  --accent: #00708f;      /* the agent's voice, and selection */
+  --accent-fg: #ffffff;
+  --accent-soft: #e3f2f8; /* tint-blue: selected */
+  --danger: #c42b1c;
+  --success: #0f7a50;
+  --warning: #8a5300;
+  --tint-red: #fbe9e7;
+  --tint-green: #e4f2eb;
+  --tint-amber: #f7eee0;
+  --scrim: rgba(11, 13, 14, 0.42);
+  --shadow: none;
+  --emeka-cyan: #23c2ff;
+  --emeka-mint: #a4fdcb;
+  /* Categorical identity colours (viz ramp) for savants, teams and projects. Never signal colour. */
+  --viz-1: #00708f;
+  --viz-2: #0f7a50;
+  --viz-3: #8a5300;
+  --viz-4: #5c4b8a;
+  --viz-5: #1a6f96;
+  --viz-6: #7a6a2e;
+  --viz-7: #94465f;
+  --viz-8: #3f5b63;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"],
+[data-theme="dark"] {
+  --bg: #000000;
+  --bg-elev: #050607;
+  --bg-panel: #0e1114;
+  --bg-hover: #0e1114;
+  --bg-active: #101314;
+  --border: #1e2226;
+  --border-strong: #2a2f33;
+  --fg: #ffffff;
+  --fg-muted: #9ba3a8;
+  --fg-faint: #8a9299;
+  --fg-disabled: #5e666b;
+  --accent: #19d1ff;
+  --accent-fg: #000000;
+  --accent-soft: #0a1418;
+  --danger: #ff4d3d;
+  --success: #4fd39a;
+  --warning: #ffb020;
+  --tint-red: #120a0a;
+  --tint-green: #08140f;
+  --tint-amber: #141005;
+  --scrim: rgba(0, 0, 0, 0.66);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-elev: var(--bg-elev);
+  --color-panel: var(--bg-panel);
+  --color-hover: var(--bg-hover);
+  --color-active: var(--bg-active);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-faint: var(--fg-faint);
+  --color-disabled: var(--fg-disabled);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-tint-red: var(--tint-red);
+  --color-tint-green: var(--tint-green);
+  --color-tint-amber: var(--tint-amber);
+  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Geist", system-ui, sans-serif;
+  /* One radius. Every rounded-* utility resolves to 4px; markers use 2px. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 4px;
+  --radius-3xl: 4px;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Geist Mono means a machine said it. Labels, states, identifiers, figures, timestamps. */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* No shadow system: depth is a surface step plus a rule. */
+* {
+  box-shadow: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/* The one permitted box-shadow: the selection marker, an inset 2px accent bar with no blur. */
+.marker-selected {
+  box-shadow: inset 2px 0 0 var(--accent) !important;
+}
+
+/* Phosphor-light-like stroke for the line icon set. */
+svg.lucide {
+  stroke-width: 1.5;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* Focus: 1px accent outline at 1px offset. No glow. */
+*:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Hover on a solid control dims; there is no press state. */
+.btn-solid:hover {
+  opacity: 0.86;
+}
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg-faint);
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+/* Document canvas */
+.doc {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.doc [contenteditable]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--fg-disabled);
+  pointer-events: none;
+}
+
+/* Entrance: fade with a 6px rise. Motion reports state; it never entertains. */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-fade-in {
+  animation: fade-in 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Live process: blinks to 0.15 on a 2.4s loop. Static state never blinks. */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
